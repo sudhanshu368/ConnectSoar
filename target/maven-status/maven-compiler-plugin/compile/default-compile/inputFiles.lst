@@ -3,6 +3,7 @@ D:\ConnectSoar\src\main\java\com\connectsoar\backend\config\WebMvcConfig.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\ConnectSoarApplication.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\controller\AdminEmployeeController.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\controller\AuthController.java
+D:\ConnectSoar\src\main\java\com\connectsoar\backend\controller\HealthController.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\controller\MeetingController.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\controller\MeetingParticipantController.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\controller\ProfileController.java
