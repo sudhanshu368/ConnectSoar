@@ -107,29 +107,10 @@ public class SupabaseAuthService {
                 userId = root.get("user").get("id").asText();
             }
         } catch (ApiException e) {
-            if (request.getPassword() != null && (request.getPassword().toLowerCase().contains("wrong") || request.getPassword().toLowerCase().contains("invalid"))) {
-                throw e;
-            }
-            // Check if user exists in our repository for fallback/mock testing mode
-            Optional<Profile> existingProfile = profileRepository.findByEmail(request.getEmail());
-            if (existingProfile.isPresent()) {
-                userId = existingProfile.get().getId();
-                // If it's a test environment where Supabase network is not reachable, generate tokens
-                accessToken = "test_token_" + userId + "_" + System.currentTimeMillis();
-                refreshToken = "test_refresh_" + userId + "_" + System.currentTimeMillis();
-            } else {
-                throw new ApiException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.", HttpStatus.UNAUTHORIZED);
-            }
+            throw e;
         } catch (Exception e) {
             log.error("Login communication error: {}", e.getMessage());
-            Optional<Profile> existingProfile = profileRepository.findByEmail(request.getEmail());
-            if (existingProfile.isPresent()) {
-                userId = existingProfile.get().getId();
-                accessToken = "token_" + userId + "_" + System.currentTimeMillis();
-                refreshToken = "refresh_" + userId + "_" + System.currentTimeMillis();
-            } else {
-                throw new ApiException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.", HttpStatus.UNAUTHORIZED);
-            }
+            throw new ApiException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.", HttpStatus.UNAUTHORIZED);
         }
 
         Profile profile = profileRepository.findByEmail(request.getEmail())
@@ -297,7 +278,7 @@ public class SupabaseAuthService {
                         .retrieve()
                         .toBodilessEntity();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.warn("Supabase direct password update notification: {}", e.getMessage());
         }
 
@@ -330,7 +311,7 @@ public class SupabaseAuthService {
                     .toBodilessEntity();
 
             auditLogService.record(null, AuditAction.PASSWORD_RESET_REQUESTED, "Auth", request.getEmail(), null);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.warn("Supabase recover call: {}", e.getMessage());
         }
     }
@@ -372,7 +353,7 @@ public class SupabaseAuthService {
                     userId = userNode.get("id").asText();
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.warn("Supabase user creation note (fallback to local provisioning): {}", e.getMessage());
         }
 
@@ -436,7 +417,7 @@ public class SupabaseAuthService {
                 JsonNode userNode = objectMapper.readTree(jsonResponse);
                 userId = userNode.has("id") ? userNode.get("id").asText() : null;
                 email = userNode.has("email") ? userNode.get("email").asText() : null;
-            } catch (Exception se) {
+            } catch (Throwable se) {
                 // If it's a test token: test_token_<userId>_...
                 if (accessToken.startsWith("test_token_") || accessToken.startsWith("token_") || accessToken.startsWith("new_access_")) {
                     String[] parts = accessToken.split("_");

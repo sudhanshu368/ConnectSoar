@@ -15,8 +15,8 @@ public class SupabaseConfig {
     private String supabaseAnonKey;
 
     @Bean
-    public RestClient supabaseRestClient() {
-        return RestClient.builder()
+    public RestClient supabaseRestClient(RestClient.Builder builder) {
+        return builder
                 .baseUrl(supabaseUrl + "/auth/v1")
                 .defaultHeader("apikey", supabaseAnonKey)
                 .defaultHeader("Authorization", "Bearer " + supabaseAnonKey)

@@ -16,21 +16,35 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.client.ExpectedCount;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureMockRestServiceServer
 public class AuthAndAuthorizationTests {
 
     @Autowired
@@ -54,6 +68,9 @@ public class AuthAndAuthorizationTests {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    private MockRestServiceServer mockServer;
+
     private Profile adminProfile;
     private Profile employeeActiveProfile;
     private Profile employeeResetRequiredProfile;
@@ -66,6 +83,8 @@ public class AuthAndAuthorizationTests {
 
     @BeforeEach
     void setUp() {
+        mockServer.reset();
+
         profileRepository.clear();
         meetingRepository.clear();
         participantRepository.clear();
@@ -152,6 +171,15 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("1. Valid login with reset_password=false returns access token, refresh token, and user profile")
     void test1_ValidLoginActiveUser() throws Exception {
+        mockServer.expect(requestTo(containsString("/token?grant_type=password")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(Map.of(
+                        "access_token", "jwt_access_" + employeeActiveProfile.getId(),
+                        "refresh_token", "jwt_refresh_" + employeeActiveProfile.getId(),
+                        "expires_in", 3600,
+                        "user", Map.of("id", employeeActiveProfile.getId(), "email", employeeActiveProfile.getEmail())
+                )), MediaType.APPLICATION_JSON));
+
         LoginRequest req = new LoginRequest(employeeActiveProfile.getEmail(), "Password123!");
 
         MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
@@ -178,6 +206,15 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("2. Valid credentials + reset_password=true returns 403 PASSWORD_CHANGE_REQUIRED without session tokens")
     void test2_ValidCredentialsResetPasswordTrue() throws Exception {
+        mockServer.expect(requestTo(containsString("/token?grant_type=password")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(Map.of(
+                        "access_token", "jwt_access_" + employeeResetRequiredProfile.getId(),
+                        "refresh_token", "jwt_refresh_" + employeeResetRequiredProfile.getId(),
+                        "expires_in", 3600,
+                        "user", Map.of("id", employeeResetRequiredProfile.getId(), "email", employeeResetRequiredProfile.getEmail())
+                )), MediaType.APPLICATION_JSON));
+
         LoginRequest req = new LoginRequest(employeeResetRequiredProfile.getEmail(), "TemporaryPass123!");
 
         MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
@@ -204,13 +241,39 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("3. Invalid credentials returns 401 INVALID_CREDENTIALS")
     void test3_InvalidPassword() throws Exception {
+        mockServer.expect(requestTo(containsString("/token?grant_type=password")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withBadRequest().body("{\"error\":\"invalid_grant\",\"error_description\":\"Invalid login credentials\"}").contentType(MediaType.APPLICATION_JSON));
+
         LoginRequest req = new LoginRequest(employeeActiveProfile.getEmail(), "WrongPassword!");
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.error.code").value("INVALID_CREDENTIALS"));
+    }
+
+    // =========================================================================
+    // SCENARIO 3b: Arbitrary wrong password (e.g. 123456, random) for existing user MUST FAIL
+    // =========================================================================
+    @Test
+    @DisplayName("3b. Arbitrary wrong password for existing user must return 401 INVALID_CREDENTIALS")
+    void test3b_ArbitraryWrongPasswordMustFail() throws Exception {
+        mockServer.expect(requestTo(containsString("/token?grant_type=password")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withBadRequest().body("{\"error\":\"invalid_grant\",\"error_description\":\"Invalid login credentials\"}").contentType(MediaType.APPLICATION_JSON));
+
+        LoginRequest req = new LoginRequest(employeeActiveProfile.getEmail(), "123456");
+
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("INVALID_CREDENTIALS"))
+                .andExpect(jsonPath("$.error.message").value("Invalid email or password."));
     }
 
     // =========================================================================
@@ -219,6 +282,10 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("4. Non-existent email returns generic 401 INVALID_CREDENTIALS")
     void test4_NonExistentEmail() throws Exception {
+        mockServer.expect(requestTo(containsString("/token?grant_type=password")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withBadRequest().body("{\"error\":\"invalid_grant\",\"error_description\":\"Invalid login credentials\"}").contentType(MediaType.APPLICATION_JSON));
+
         LoginRequest req = new LoginRequest("doesnotexist@example.com", "SomePassword123!");
 
         mockMvc.perform(post("/api/v1/auth/login")
@@ -235,6 +302,14 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("5. Inactive user login returns 403 USER_INACTIVE")
     void test5_InactiveUserLogin() throws Exception {
+        mockServer.expect(requestTo(containsString("/token?grant_type=password")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(Map.of(
+                        "access_token", "jwt_access_" + employeeInactiveProfile.getId(),
+                        "refresh_token", "jwt_refresh_" + employeeInactiveProfile.getId(),
+                        "user", Map.of("id", employeeInactiveProfile.getId(), "email", employeeInactiveProfile.getEmail())
+                )), MediaType.APPLICATION_JSON));
+
         LoginRequest req = new LoginRequest(employeeInactiveProfile.getEmail(), "Pass123!");
 
         mockMvc.perform(post("/api/v1/auth/login")
@@ -251,6 +326,14 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("6. Suspended user login returns 403 USER_SUSPENDED")
     void test6_SuspendedUserLogin() throws Exception {
+        mockServer.expect(requestTo(containsString("/token?grant_type=password")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(Map.of(
+                        "access_token", "jwt_access_" + employeeSuspendedProfile.getId(),
+                        "refresh_token", "jwt_refresh_" + employeeSuspendedProfile.getId(),
+                        "user", Map.of("id", employeeSuspendedProfile.getId(), "email", employeeSuspendedProfile.getEmail())
+                )), MediaType.APPLICATION_JSON));
+
         LoginRequest req = new LoginRequest(employeeSuspendedProfile.getEmail(), "Pass123!");
 
         mockMvc.perform(post("/api/v1/auth/login")
@@ -291,6 +374,14 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("9. Valid refresh token successfully returns refreshed tokens")
     void test9_ValidRefreshToken() throws Exception {
+        mockServer.expect(requestTo(containsString("/token?grant_type=refresh_token")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(Map.of(
+                        "access_token", "new_access_token_123",
+                        "refresh_token", "new_refresh_token_123",
+                        "expires_in", 3600
+                )), MediaType.APPLICATION_JSON));
+
         String validRefresh = "test_refresh_" + employeeActiveProfile.getId() + "_" + System.currentTimeMillis();
         RefreshTokenRequest req = new RefreshTokenRequest(validRefresh, employeeActiveToken);
 
@@ -308,6 +399,10 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("10. Invalid refresh token returns 401/400 TOKEN_INVALID")
     void test10_InvalidRefreshToken() throws Exception {
+        mockServer.expect(requestTo(containsString("/token?grant_type=refresh_token")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withBadRequest().body("{\"error\":\"invalid_grant\",\"error_description\":\"Invalid refresh token\"}").contentType(MediaType.APPLICATION_JSON));
+
         RefreshTokenRequest req = new RefreshTokenRequest("completely_bogus_refresh_token", null);
 
         mockMvc.perform(post("/api/v1/auth/refresh")
@@ -366,6 +461,16 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("14 & 15. Password changed with reset token sets reset_password=false")
     void test14_15_PasswordSuccessfullyChanged() throws Exception {
+        // Mock the login call after password change
+        mockServer.expect(requestTo(containsString("/token?grant_type=password")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(Map.of(
+                        "access_token", "jwt_access_" + employeeResetRequiredProfile.getId(),
+                        "refresh_token", "jwt_refresh_" + employeeResetRequiredProfile.getId(),
+                        "expires_in", 3600,
+                        "user", Map.of("id", employeeResetRequiredProfile.getId(), "email", employeeResetRequiredProfile.getEmail())
+                )), MediaType.APPLICATION_JSON));
+
         // Generate single-purpose short-lived password reset token
         String resetToken = jwtTokenProvider.generatePasswordResetToken(
                 employeeResetRequiredProfile.getId(), employeeResetRequiredProfile.getEmail());
@@ -413,6 +518,10 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("17. Forgot-password returns identical generic message regardless of email existence")
     void test17_ForgotPasswordEnumerationProtection() throws Exception {
+        mockServer.expect(ExpectedCount.manyTimes(), requestTo(containsString("/recover")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess());
+
         ForgotPasswordRequest reqExisting = new ForgotPasswordRequest(employeeActiveProfile.getEmail());
         ForgotPasswordRequest reqNonExisting = new ForgotPasswordRequest("nonexistentuser999@connectsoar.com");
 
@@ -435,6 +544,10 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("18. Rate limiter throttles rapid brute-force requests with 429 RATE_LIMITED")
     void test18_LoginRateLimiting() throws Exception {
+        mockServer.expect(ExpectedCount.manyTimes(), requestTo(containsString("/token?grant_type=password")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withBadRequest().body("{\"error\":\"invalid_grant\"}").contentType(MediaType.APPLICATION_JSON));
+
         LoginRequest req = new LoginRequest("test.ratelimit@example.com", "Password!");
 
         // Fire multiple login requests from same simulated IP
@@ -460,6 +573,14 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("19. Refresh token endpoint issues fresh rotated tokens")
     void test19_RefreshTokenRotation() throws Exception {
+        mockServer.expect(requestTo(containsString("/token?grant_type=refresh_token")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(Map.of(
+                        "access_token", "new_rotated_access_123",
+                        "refresh_token", "new_rotated_refresh_123",
+                        "expires_in", 3600
+                )), MediaType.APPLICATION_JSON));
+
         String originalRefresh = "test_refresh_" + employeeActiveProfile.getId() + "_1";
         RefreshTokenRequest req = new RefreshTokenRequest(originalRefresh, employeeActiveToken);
 
@@ -564,6 +685,13 @@ public class AuthAndAuthorizationTests {
     @Test
     @DisplayName("Admin creates employee: forces role=employee, status=active, reset_password=true")
     void testAdminCreateEmployeeStrictDefaults() throws Exception {
+        mockServer.expect(ExpectedCount.manyTimes(), requestTo(containsString("/admin/users")))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(Map.of(
+                        "id", UUID.randomUUID().toString(),
+                        "email", "rohit@connectsoar.com"
+                )), MediaType.APPLICATION_JSON));
+
         CreateEmployeeAdminRequest req = new CreateEmployeeAdminRequest(
                 "Rohit Sharma", "rohit@connectsoar.com", "Mobile Engineering", "Senior Flutter Dev", "+919876543210");
 
