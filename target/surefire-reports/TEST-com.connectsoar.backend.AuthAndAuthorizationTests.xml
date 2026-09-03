@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.connectsoar.backend.AuthAndAuthorizationTests" time="11.026" tests="22" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="17"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="D:\ConnectSoar\target\test-classes;D:\ConnectSoar\target\classes;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.3.2\spring-boot-starter-web-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter\3.3.2\spring-boot-starter-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot\3.3.2\spring-boot-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.3.2\spring-boot-autoconfigure-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.3.2\spring-boot-starter-logging-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\ch\qos\logback\logback-classic\1.5.6\logback-classic-1.5.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\ch\qos\logback\logback-core\1.5.6\logback-core-1.5.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.23.1\log4j-to-slf4j-2.23.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apache\logging\log4j\log4j-api\2.23.1\log4j-api-2.23.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\slf4j\jul-to-slf4j\2.0.13\jul-to-slf4j-2.0.13.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.3.2\spring-boot-starter-json-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.17.2\jackson-datatype-jdk8-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.17.2\jackson-datatype-jsr310-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.17.2\jackson-module-parameter-names-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.3.2\spring-boot-starter-tomcat-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.26\tomcat-embed-core-10.1.26.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.26\tomcat-embed-websocket-10.1.26.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-web\6.1.11\spring-web-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-beans\6.1.11\spring-beans-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\io\micrometer\micrometer-observation\1.13.2\micrometer-observation-1.13.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\io\micrometer\micrometer-commons\1.13.2\micrometer-commons-1.13.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-webmvc\6.1.11\spring-webmvc-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-aop\6.1.11\spring-aop-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-context\6.1.11\spring-context-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-expression\6.1.11\spring-expression-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-validation\3.3.2\spring-boot-starter-validation-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.26\tomcat-embed-el-10.1.26.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\hibernate\validator\hibernate-validator\8.0.1.Final\hibernate-validator-8.0.1.Final.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\jboss\logging\jboss-logging\3.5.3.Final\jboss-logging-3.5.3.Final.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\classmate\1.7.0\classmate-1.7.0.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\projectlombok\lombok\1.18.34\lombok-1.18.34.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\io\jsonwebtoken\jjwt-api\0.12.6\jjwt-api-0.12.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\io\jsonwebtoken\jjwt-impl\0.12.6\jjwt-impl-0.12.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\io\jsonwebtoken\jjwt-jackson\0.12.6\jjwt-jackson-0.12.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.17.2\jackson-databind-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.17.2\jackson-annotations-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.17.2\jackson-core-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-test\3.3.2\spring-boot-starter-test-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-test\3.3.2\spring-boot-test-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\3.3.2\spring-boot-test-autoconfigure-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\jayway\jsonpath\json-path\2.9.0\json-path-2.9.0.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\slf4j\slf4j-api\2.0.13\slf4j-api-2.0.13.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.2\jakarta.xml.bind-api-4.0.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.3\jakarta.activation-api-2.1.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\net\minidev\json-smart\2.5.1\json-smart-2.5.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\net\minidev\accessors-smart\2.5.1\accessors-smart-2.5.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\ow2\asm\asm\9.6\asm-9.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\assertj\assertj-core\3.25.3\assertj-core-3.25.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\net\bytebuddy\byte-buddy\1.14.18\byte-buddy-1.14.18.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\awaitility\awaitility\4.2.1\awaitility-4.2.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\jupiter\junit-jupiter\5.10.3\junit-jupiter-5.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.3\junit-jupiter-api-5.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\platform\junit-platform-commons\1.10.3\junit-platform-commons-1.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.10.3\junit-jupiter-params-5.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.3\junit-jupiter-engine-5.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\platform\junit-platform-engine\1.10.3\junit-platform-engine-1.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\mockito\mockito-core\5.11.0\mockito-core-5.11.0.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.18\byte-buddy-agent-1.14.18.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\mockito\mockito-junit-jupiter\5.11.0\mockito-junit-jupiter-5.11.0.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-core\6.1.11\spring-core-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-jcl\6.1.11\spring-jcl-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-test\6.1.11\spring-test-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\xmlunit\xmlunit-core\2.9.1\xmlunit-core-2.9.1.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="Asia/Calcutta"/>
+    <property name="org.jboss.logging.provider" value="slf4j"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="17"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="IN"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-17\bin"/>
+    <property name="sun.java.command" value="C:\Users\Sudhanshu Shekhar\AppData\Local\Temp\surefire9058084487858922531\surefirebooter-20260831202033743_3.jar C:\Users\Sudhanshu Shekhar\AppData\Local\Temp\surefire9058084487858922531 2026-08-31T20-20-33_495-jvmRun1 surefire-20260831202033743_1tmp surefire_0-20260831202033743_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="D:\ConnectSoar\target\test-classes;D:\ConnectSoar\target\classes;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.3.2\spring-boot-starter-web-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter\3.3.2\spring-boot-starter-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot\3.3.2\spring-boot-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.3.2\spring-boot-autoconfigure-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.3.2\spring-boot-starter-logging-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\ch\qos\logback\logback-classic\1.5.6\logback-classic-1.5.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\ch\qos\logback\logback-core\1.5.6\logback-core-1.5.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.23.1\log4j-to-slf4j-2.23.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apache\logging\log4j\log4j-api\2.23.1\log4j-api-2.23.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\slf4j\jul-to-slf4j\2.0.13\jul-to-slf4j-2.0.13.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.3.2\spring-boot-starter-json-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.17.2\jackson-datatype-jdk8-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.17.2\jackson-datatype-jsr310-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.17.2\jackson-module-parameter-names-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.3.2\spring-boot-starter-tomcat-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.26\tomcat-embed-core-10.1.26.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.26\tomcat-embed-websocket-10.1.26.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-web\6.1.11\spring-web-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-beans\6.1.11\spring-beans-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\io\micrometer\micrometer-observation\1.13.2\micrometer-observation-1.13.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\io\micrometer\micrometer-commons\1.13.2\micrometer-commons-1.13.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-webmvc\6.1.11\spring-webmvc-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-aop\6.1.11\spring-aop-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-context\6.1.11\spring-context-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-expression\6.1.11\spring-expression-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-validation\3.3.2\spring-boot-starter-validation-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.26\tomcat-embed-el-10.1.26.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\hibernate\validator\hibernate-validator\8.0.1.Final\hibernate-validator-8.0.1.Final.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\jboss\logging\jboss-logging\3.5.3.Final\jboss-logging-3.5.3.Final.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\classmate\1.7.0\classmate-1.7.0.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\projectlombok\lombok\1.18.34\lombok-1.18.34.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\io\jsonwebtoken\jjwt-api\0.12.6\jjwt-api-0.12.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\io\jsonwebtoken\jjwt-impl\0.12.6\jjwt-impl-0.12.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\io\jsonwebtoken\jjwt-jackson\0.12.6\jjwt-jackson-0.12.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.17.2\jackson-databind-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.17.2\jackson-annotations-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.17.2\jackson-core-2.17.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-starter-test\3.3.2\spring-boot-starter-test-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-test\3.3.2\spring-boot-test-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\3.3.2\spring-boot-test-autoconfigure-3.3.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\jayway\jsonpath\json-path\2.9.0\json-path-2.9.0.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\slf4j\slf4j-api\2.0.13\slf4j-api-2.0.13.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.2\jakarta.xml.bind-api-4.0.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.3\jakarta.activation-api-2.1.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\net\minidev\json-smart\2.5.1\json-smart-2.5.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\net\minidev\accessors-smart\2.5.1\accessors-smart-2.5.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\ow2\asm\asm\9.6\asm-9.6.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\assertj\assertj-core\3.25.3\assertj-core-3.25.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\net\bytebuddy\byte-buddy\1.14.18\byte-buddy-1.14.18.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\awaitility\awaitility\4.2.1\awaitility-4.2.1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\jupiter\junit-jupiter\5.10.3\junit-jupiter-5.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.3\junit-jupiter-api-5.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\platform\junit-platform-commons\1.10.3\junit-platform-commons-1.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.10.3\junit-jupiter-params-5.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.3\junit-jupiter-engine-5.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\junit\platform\junit-platform-engine\1.10.3\junit-platform-engine-1.10.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\mockito\mockito-core\5.11.0\mockito-core-5.11.0.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.18\byte-buddy-agent-1.14.18.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\mockito\mockito-junit-jupiter\5.11.0\mockito-junit-jupiter-5.11.0.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-core\6.1.11\spring-core-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-jcl\6.1.11\spring-jcl-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\springframework\spring-test\6.1.11\spring-test-6.1.11.jar;C:\Users\Sudhanshu Shekhar\.m2\repository\org\xmlunit\xmlunit-core\2.9.1\xmlunit-core-2.9.1.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\Sudhanshu Shekhar"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2024-10-15"/>
+    <property name="java.home" value="C:\Program Files\Java\jdk-17"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="D:\ConnectSoar"/>
+    <property name="java.vm.compressedOopsMode" value="32-bit"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="FILE_LOG_CHARSET" value="windows-1252"/>
+    <property name="java.awt.headless" value="true"/>
+    <property name="surefire.real.class.path" value="C:\Users\Sudhanshu Shekhar\AppData\Local\Temp\surefire9058084487858922531\surefirebooter-20260831202033743_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="17.0.13+10-LTS-268"/>
+    <property name="user.name" value="Sudhanshu Shekhar"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="Cp1252"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\Sudhanshu Shekhar\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\SUDHAN~1\AppData\Local\Temp\"/>
+    <property name="java.version" value="17.0.13"/>
+    <property name="user.dir" value="D:\ConnectSoar"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="PID" value="21344"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="CONSOLE_LOG_CHARSET" value="windows-1252"/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-17\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:/Users/Sudhanshu Shekhar/.gemini/antigravity/bin;C:\Users\Sudhanshu Shekhar\AppData\Roaming\Antigravity\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\Java\jdk-17\bin;C:\Program Files\Java\jdk-17\lib;%ANDROID_HOME%\platform-tools;%ANDROID_HOME%\emulator;%ANDROID_HOME%\cmdline-tools\latest\bin;C:\Program Files\GitHub CLI\;C:\Program Files\nodejs\;D:\flutter\bin;D:\Android\Sdk\platform-tools;D:\Android\Sdk\tools;C:\Users\Sudhanshu Shekhar\AppData\Local\Programs\Python\Python310\Scripts\;C:\Users\Sudhanshu Shekhar\AppData\Local\Programs\Python\Python310\;C:\Users\Sudhanshu Shekhar\AppData\Local\Microsoft\WindowsApps;C:\Users\Sudhanshu Shekhar\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Sudhanshu Shekhar\AppData\Local\GitHubDesktop\bin;D:\Android\Sdk\platform-tools;D:\Android\Sdk\emulator;C:\ProgramData\Sudhanshu Shekhar\GitHubDesktop\bin;C:\Users\Sudhanshu Shekhar\AppData\Roaming\npm;C:\Users\Sudhanshu Shekhar\AppData\Local\Programs\Antigravity\bin;C:\Program Files\JetBrains\IntelliJ IDEA 2026.2.1\bin;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="17.0.13+10-LTS-268"/>
+    <property name="java.specification.maintenance.version" value="1"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="61.0"/>
+  </properties>
+  <testcase name="test12_EmployeeAttemptingRoleEscalation" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="2.336">
+    <system-out><![CDATA[20:20:35.013 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.connectsoar.backend.AuthAndAuthorizationTests]: AuthAndAuthorizationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+20:20:35.226 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.connectsoar.backend.ConnectSoarApplication for test class com.connectsoar.backend.AuthAndAuthorizationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.2)
+
+2026-08-31T20:20:35.866+05:30  INFO 21344 --- [           main] c.c.backend.AuthAndAuthorizationTests    : Starting AuthAndAuthorizationTests using Java 17.0.13 with PID 21344 (started by Sudhanshu Shekhar in D:\ConnectSoar)
+2026-08-31T20:20:35.867+05:30 DEBUG 21344 --- [           main] c.c.backend.AuthAndAuthorizationTests    : Running with Spring Boot v3.3.2, Spring v6.1.11
+2026-08-31T20:20:35.867+05:30  INFO 21344 --- [           main] c.c.backend.AuthAndAuthorizationTests    : No active profile set, falling back to 1 default profile: "default"
+2026-08-31T20:20:38.148+05:30  INFO 21344 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-08-31T20:20:38.148+05:30  INFO 21344 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-08-31T20:20:38.149+05:30  INFO 21344 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-08-31T20:20:38.177+05:30  INFO 21344 --- [           main] c.c.backend.AuthAndAuthorizationTests    : Started AuthAndAuthorizationTests in 2.742 seconds (process running for 4.187)
+2026-08-31T20:20:39.597+05:30  WARN 21344 --- [           main] c.c.backend.security.JwtTokenProvider    : Invalid JWT signature/format: Invalid compact JWT string: Compact JWSs must contain exactly 2 period characters, and compact JWEs must contain exactly 4.  Found: 0
+2026-08-31T20:20:40.481+05:30  WARN 21344 --- [           main] c.c.b.s.AuthenticationInterceptor        : Access denied for user emp-active-1fc77b81-36c1-4e5f-97f2-0e9e254f8dea: requires role [admin] but user has employee
+2026-08-31T20:20:40.487+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [FORBIDDEN]: Access denied: insufficient permissions.
+]]></system-out>
+  </testcase>
+  <testcase name="test22_DisabledEmployeeAccessRejected" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.141">
+    <system-out><![CDATA[2026-08-31T20:20:40.550+05:30  WARN 21344 --- [           main] c.c.backend.security.JwtTokenProvider    : Invalid JWT signature/format: Invalid compact JWT string: Compact JWSs must contain exactly 2 period characters, and compact JWEs must contain exactly 4.  Found: 0
+2026-08-31T20:20:40.682+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [USER_INACTIVE]: User account is inactive.
+]]></system-out>
+  </testcase>
+  <testcase name="test8_InvalidAccessToken" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.136">
+    <system-out><![CDATA[2026-08-31T20:20:40.692+05:30  WARN 21344 --- [           main] c.c.backend.security.JwtTokenProvider    : Invalid JWT signature/format: Invalid compact JWT string: Compact JWSs must contain exactly 2 period characters, and compact JWEs must contain exactly 4.  Found: 0
+2026-08-31T20:20:40.820+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [TOKEN_INVALID]: Invalid or expired access token.
+]]></system-out>
+  </testcase>
+  <testcase name="test2_ValidCredentialsResetPasswordTrue" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.601">
+    <system-out><![CDATA[2026-08-31T20:20:40.993+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: new.employee@connectsoar.com
+2026-08-31T20:20:41.390+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:41.392+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Password change required for employee: new.employee@connectsoar.com
+2026-08-31T20:20:41.416+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [PASSWORD_CHANGE_REQUIRED]: Password change is required before accessing the application.
+]]></system-out>
+  </testcase>
+  <testcase name="test14_15_PasswordSuccessfullyChanged" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.186">
+    <system-out><![CDATA[2026-08-31T20:20:41.442+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing change password request
+2026-08-31T20:20:41.464+05:30  INFO 21344 --- [           main] c.c.backend.service.AuditLogService      : Audit event recorded: action=PASSWORD_CHANGED, actor=emp-reset-2decfdde-f99f-49e4-82be-a1978b12fa82, resourceType=Auth, resourceId=emp-reset-2decfdde-f99f-49e4-82be-a1978b12fa82
+2026-08-31T20:20:41.464+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Password successfully changed and reset_password cleared for userId: emp-reset-2decfdde-f99f-49e4-82be-a1978b12fa82
+2026-08-31T20:20:41.470+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: new.employee@connectsoar.com
+2026-08-31T20:20:41.606+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:41.607+05:30  INFO 21344 --- [           main] c.c.backend.service.AuditLogService      : Audit event recorded: action=USER_LOGIN_SUCCESS, actor=emp-reset-2decfdde-f99f-49e4-82be-a1978b12fa82, resourceType=Auth, resourceId=emp-reset-2decfdde-f99f-49e4-82be-a1978b12fa82
+]]></system-out>
+  </testcase>
+  <testcase name="test19_RefreshTokenRotation" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.137">
+    <system-out><![CDATA[2026-08-31T20:20:41.627+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing token refresh
+2026-08-31T20:20:41.751+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase refresh failed with status: 400 BAD_REQUEST
+]]></system-out>
+  </testcase>
+  <testcase name="testAdminCreateEmployeeStrictDefaults" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.38">
+    <system-out><![CDATA[2026-08-31T20:20:41.763+05:30  WARN 21344 --- [           main] c.c.backend.security.JwtTokenProvider    : Invalid JWT signature/format: Invalid compact JWT string: Compact JWSs must contain exactly 2 period characters, and compact JWEs must contain exactly 4.  Found: 0
+2026-08-31T20:20:41.913+05:30  INFO 21344 --- [           main] c.c.b.c.AdminEmployeeController          : Admin admin-81a753a3-220e-4d8c-93ed-628f57197bdb creating new employee: rohit@connectsoar.com
+2026-08-31T20:20:41.913+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Admin admin-81a753a3-220e-4d8c-93ed-628f57197bdb creating employee: rohit@connectsoar.com
+2026-08-31T20:20:42.134+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase user creation note (fallback to local provisioning): 422 Unprocessable Entity: "{"code":422,"error_code":"user_already_exists","msg":"User already registered"}"
+2026-08-31T20:20:42.134+05:30  INFO 21344 --- [           main] c.c.backend.service.AuditLogService      : Audit event recorded: action=EMPLOYEE_CREATED, actor=admin-81a753a3-220e-4d8c-93ed-628f57197bdb, resourceType=Profile, resourceId=be02ca8a-fc32-4acb-b874-b998688394d3
+]]></system-out>
+  </testcase>
+  <testcase name="test20_UnauthorizedMeetingJoin" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.142">
+    <system-out><![CDATA[2026-08-31T20:20:42.145+05:30  WARN 21344 --- [           main] c.c.backend.security.JwtTokenProvider    : Invalid JWT signature/format: Invalid compact JWT string: Compact JWSs must contain exactly 2 period characters, and compact JWEs must contain exactly 4.  Found: 0
+2026-08-31T20:20:42.278+05:30  INFO 21344 --- [           main] c.c.backend.service.MeetingService       : User emp-active-47fc6eb4-aa45-4bf6-9743-d141677f0662 requesting to join meeting meeting-7d68f684-0893-448a-a837-f53a29d576f2
+2026-08-31T20:20:42.279+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [ACCESS_DENIED]: You are not authorized to join this meeting.
+]]></system-out>
+  </testcase>
+  <testcase name="test1_ValidLoginActiveUser" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.152">
+    <system-out><![CDATA[2026-08-31T20:20:42.288+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: active.employee@connectsoar.com
+2026-08-31T20:20:42.433+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:42.434+05:30  INFO 21344 --- [           main] c.c.backend.service.AuditLogService      : Audit event recorded: action=USER_LOGIN_SUCCESS, actor=emp-active-4aab7538-29e5-4918-977d-bbf7a165ba78, resourceType=Auth, resourceId=emp-active-4aab7538-29e5-4918-977d-bbf7a165ba78
+]]></system-out>
+  </testcase>
+  <testcase name="test7_ExpiredAccessToken" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.127">
+    <system-out><![CDATA[2026-08-31T20:20:42.444+05:30  WARN 21344 --- [           main] c.c.backend.security.JwtTokenProvider    : Invalid JWT signature/format: Invalid compact JWT string: Compact JWSs must contain exactly 2 period characters, and compact JWEs must contain exactly 4.  Found: 3
+2026-08-31T20:20:42.567+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [TOKEN_INVALID]: Invalid or expired access token.
+]]></system-out>
+  </testcase>
+  <testcase name="test5_InactiveUserLogin" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.133">
+    <system-out><![CDATA[2026-08-31T20:20:42.573+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: inactive.employee@connectsoar.com
+2026-08-31T20:20:42.701+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:42.701+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Login rejected: user account is inactive for inactive.employee@connectsoar.com
+2026-08-31T20:20:42.702+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [USER_INACTIVE]: User account is inactive.
+]]></system-out>
+  </testcase>
+  <testcase name="test3_InvalidPassword" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.149">
+    <system-out><![CDATA[2026-08-31T20:20:42.708+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: active.employee@connectsoar.com
+2026-08-31T20:20:42.852+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:42.852+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+]]></system-out>
+  </testcase>
+  <testcase name="test21_AuthorizedMeetingJoin" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.139">
+    <system-out><![CDATA[2026-08-31T20:20:42.858+05:30  WARN 21344 --- [           main] c.c.backend.security.JwtTokenProvider    : Invalid JWT signature/format: Invalid compact JWT string: Compact JWSs must contain exactly 2 period characters, and compact JWEs must contain exactly 4.  Found: 0
+2026-08-31T20:20:42.989+05:30  INFO 21344 --- [           main] c.c.backend.service.MeetingService       : User emp-active-4827bc44-9752-4a26-8e7e-34d1a47ff07f requesting to join meeting meeting-e2acdd73-e5cc-45f7-972f-acf02b5bf239
+]]></system-out>
+  </testcase>
+  <testcase name="test4_NonExistentEmail" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.144">
+    <system-out><![CDATA[2026-08-31T20:20:42.998+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: doesnotexist@example.com
+2026-08-31T20:20:43.137+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:43.138+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+]]></system-out>
+  </testcase>
+  <testcase name="test18_LoginRateLimiting" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="1.362">
+    <system-out><![CDATA[2026-08-31T20:20:43.143+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: test.ratelimit@example.com
+2026-08-31T20:20:43.277+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:43.278+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+2026-08-31T20:20:43.282+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: test.ratelimit@example.com
+2026-08-31T20:20:43.432+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:43.433+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+2026-08-31T20:20:43.435+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: test.ratelimit@example.com
+2026-08-31T20:20:43.558+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:43.558+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+2026-08-31T20:20:43.561+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: test.ratelimit@example.com
+2026-08-31T20:20:43.686+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:43.687+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+2026-08-31T20:20:43.689+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: test.ratelimit@example.com
+2026-08-31T20:20:43.837+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:43.837+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+2026-08-31T20:20:43.840+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: test.ratelimit@example.com
+2026-08-31T20:20:43.978+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:43.980+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+2026-08-31T20:20:43.983+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: test.ratelimit@example.com
+2026-08-31T20:20:44.103+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:44.104+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+2026-08-31T20:20:44.107+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: test.ratelimit@example.com
+2026-08-31T20:20:44.233+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:44.234+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+2026-08-31T20:20:44.237+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: test.ratelimit@example.com
+2026-08-31T20:20:44.373+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:44.373+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+2026-08-31T20:20:44.376+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: test.ratelimit@example.com
+2026-08-31T20:20:44.496+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:44.497+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [INVALID_CREDENTIALS]: Invalid email or password.
+2026-08-31T20:20:44.500+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: test.ratelimit@example.com
+2026-08-31T20:20:44.500+05:30  WARN 21344 --- [           main] c.c.backend.service.RateLimitService     : Rate limit exceeded for key: 192.168.1.100:/api/v1/auth/login
+2026-08-31T20:20:44.502+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [RATE_LIMITED]: Too many requests. Please try again later.
+]]></system-out>
+  </testcase>
+  <testcase name="test16_UserBlockedFromMeetingsWhileResetPasswordTrue" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.135">
+    <system-out><![CDATA[2026-08-31T20:20:44.509+05:30  WARN 21344 --- [           main] c.c.backend.security.JwtTokenProvider    : Invalid JWT signature/format: Invalid compact JWT string: Compact JWSs must contain exactly 2 period characters, and compact JWEs must contain exactly 4.  Found: 0
+2026-08-31T20:20:44.639+05:30  WARN 21344 --- [           main] c.c.b.s.AuthenticationInterceptor        : Access blocked for user emp-reset-c6b26c4b-c93d-46ad-805e-9066b2744dcf: reset_password is required
+2026-08-31T20:20:44.640+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [PASSWORD_CHANGE_REQUIRED]: Password change is required before accessing the application.
+]]></system-out>
+  </testcase>
+  <testcase name="test6_SuspendedUserLogin" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.133">
+    <system-out><![CDATA[2026-08-31T20:20:44.644+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing login for email: suspended.employee@connectsoar.com
+2026-08-31T20:20:44.773+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase auth failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:44.773+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Login rejected: user account is suspended for suspended.employee@connectsoar.com
+2026-08-31T20:20:44.773+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [USER_SUSPENDED]: User account is suspended.
+]]></system-out>
+  </testcase>
+  <testcase name="test9_ValidRefreshToken" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.149">
+    <system-out><![CDATA[2026-08-31T20:20:44.781+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing token refresh
+2026-08-31T20:20:44.924+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase refresh failed with status: 400 BAD_REQUEST
+]]></system-out>
+  </testcase>
+  <testcase name="test10_InvalidRefreshToken" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.178">
+    <system-out><![CDATA[2026-08-31T20:20:44.932+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing token refresh
+2026-08-31T20:20:45.103+05:30  WARN 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Supabase refresh failed with status: 400 BAD_REQUEST
+2026-08-31T20:20:45.103+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [TOKEN_INVALID]: Invalid or expired refresh token.
+]]></system-out>
+  </testcase>
+  <testcase name="test17_ForgotPasswordEnumerationProtection" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.336">
+    <system-out><![CDATA[2026-08-31T20:20:45.119+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing forgot password request for email: active.employee@connectsoar.com
+2026-08-31T20:20:45.261+05:30  INFO 21344 --- [           main] c.c.backend.service.AuditLogService      : Audit event recorded: action=PASSWORD_RESET_REQUESTED, actor=null, resourceType=Auth, resourceId=active.employee@connectsoar.com
+2026-08-31T20:20:45.265+05:30  INFO 21344 --- [           main] c.c.backend.service.SupabaseAuthService  : Processing forgot password request for email: nonexistentuser999@connectsoar.com
+2026-08-31T20:20:45.442+05:30  INFO 21344 --- [           main] c.c.backend.service.AuditLogService      : Audit event recorded: action=PASSWORD_RESET_REQUESTED, actor=null, resourceType=Auth, resourceId=nonexistentuser999@connectsoar.com
+]]></system-out>
+  </testcase>
+  <testcase name="test13_EmployeeSelfProfileIsolation" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.152">
+    <system-out><![CDATA[2026-08-31T20:20:45.448+05:30  WARN 21344 --- [           main] c.c.backend.security.JwtTokenProvider    : Invalid JWT signature/format: Invalid compact JWT string: Compact JWSs must contain exactly 2 period characters, and compact JWEs must contain exactly 4.  Found: 0
+2026-08-31T20:20:45.594+05:30  INFO 21344 --- [           main] c.c.backend.service.ProfileService       : Fetching profile for userId: emp-active-bc4b8c3e-02f9-417d-9fd2-a3427128d67d
+]]></system-out>
+  </testcase>
+  <testcase name="test11_EmployeeAttemptingAdminApi" classname="com.connectsoar.backend.AuthAndAuthorizationTests" time="0.154">
+    <system-out><![CDATA[2026-08-31T20:20:45.603+05:30  WARN 21344 --- [           main] c.c.backend.security.JwtTokenProvider    : Invalid JWT signature/format: Invalid compact JWT string: Compact JWSs must contain exactly 2 period characters, and compact JWEs must contain exactly 4.  Found: 0
+2026-08-31T20:20:45.751+05:30  WARN 21344 --- [           main] c.c.b.s.AuthenticationInterceptor        : Access denied for user emp-active-f9530325-72bc-499d-94a8-915565d16c4d: requires role [admin] but user has employee
+2026-08-31T20:20:45.752+05:30  WARN 21344 --- [           main] c.c.b.exception.GlobalExceptionHandler   : API Exception [FORBIDDEN]: Access denied: insufficient permissions.
+]]></system-out>
+  </testcase>
+</testsuite>

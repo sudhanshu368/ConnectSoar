@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+supabase:
+  url: ${SUPABASE_URL:https://iqtkkvmphqvzqwkinmfo.supabase.co}
+  anon-key: ${SUPABASE_ANON_KEY:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlxdGtrdm1waHF2enF3a2lubWZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1MTIxNjUsImV4cCI6MjEwMzA4ODE2NX0.fwCfR7uqbo3Xyaljkl3mE2Oo7hufeFmIOnxbzaDW9y4}
+  service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}
+
+jwt:
+  secret: ${JWT_SECRET:ConnectSoarProductionGradeSuperSecretJwtKey2026!WithHighEntropyAndZeroTrustSecurity}
+
+logging:
+  level:
+    com.connectsoar.backend: DEBUG
+    org.springframework.web: INFO
