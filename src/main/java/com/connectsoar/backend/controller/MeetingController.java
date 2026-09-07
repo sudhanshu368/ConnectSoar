@@ -39,10 +39,10 @@ public class MeetingController {
         this.meetingService = meetingService;
     }
 
-    @PostMapping
+    @PostMapping({"", "/", "/instant", "/instant-room", "/create"})
     public ResponseEntity<ApiResponse<MeetingResponse>> createMeeting(
             @RequestAttribute("userPrincipal") UserPrincipal principal,
-            @Valid @RequestBody CreateMeetingRequest request) {
+            @RequestBody(required = false) CreateMeetingRequest request) {
         MeetingResponse response = meetingService.createMeeting(principal, request);
         return new ResponseEntity<>(ApiResponse.ok("Meeting created successfully", response), HttpStatus.CREATED);
     }

@@ -87,8 +87,13 @@ public class MeetingService {
     public MeetingResponse createMeeting(UserPrincipal user, CreateMeetingRequest request) {
         log.info("Creating meeting by user: {}", user.getUserId());
 
+        if (request == null) {
+            request = new CreateMeetingRequest();
+        }
+
         if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
-            throw new ApiException(ErrorCode.VALIDATION_ERROR, "Meeting title is required.", HttpStatus.BAD_REQUEST);
+            String userName = user.getName() != null && !user.getName().isBlank() ? user.getName() : "Instant";
+            request.setTitle(userName + "'s Meeting");
         }
 
         String meetingId = UUID.randomUUID().toString();
