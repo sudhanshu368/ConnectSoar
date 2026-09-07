@@ -1,18 +1,36 @@
 package com.connectsoar.backend.enums;
 
-public enum MeetingStatus {
-    scheduled,
-    ongoing,
-    completed,
-    cancelled;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
+public enum MeetingStatus {
+    SCHEDULED,
+    LIVE,
+    COMPLETED,
+    CANCELLED;
+
+    public static final MeetingStatus scheduled = SCHEDULED;
+    public static final MeetingStatus ongoing = LIVE;
+    public static final MeetingStatus completed = COMPLETED;
+    public static final MeetingStatus cancelled = CANCELLED;
+
+    @JsonCreator
     public static MeetingStatus fromString(String val) {
-        if (val == null) return scheduled;
+        if (val == null || val.isBlank()) return SCHEDULED;
+        String normalized = val.trim().toUpperCase();
+        if ("ONGOING".equals(normalized)) {
+            return LIVE;
+        }
         for (MeetingStatus s : values()) {
-            if (s.name().equalsIgnoreCase(val)) {
+            if (s.name().equalsIgnoreCase(normalized)) {
                 return s;
             }
         }
-        return scheduled;
+        return SCHEDULED;
+    }
+
+    @JsonValue
+    public String toValue() {
+        return this.name();
     }
 }

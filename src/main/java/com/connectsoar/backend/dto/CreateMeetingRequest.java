@@ -1,10 +1,21 @@
 package com.connectsoar.backend.dto;
 
+import com.connectsoar.backend.enums.MeetingType;
+import com.connectsoar.backend.enums.RecurrenceType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateMeetingRequest {
 
     @NotBlank(message = "Meeting title is required")
@@ -12,51 +23,69 @@ public class CreateMeetingRequest {
 
     private String description;
 
+    @Builder.Default
+    @JsonProperty("meetingType")
+    private MeetingType meetingType = MeetingType.INSTANT_ROOM;
+
+    @JsonProperty("scheduledStartTime")
+    private LocalDateTime scheduledStartTime;
+
+    @JsonProperty("durationMinutes")
+    private Integer durationMinutes;
+
+    private String timezone;
+
+    @Builder.Default
+    @JsonProperty("reminderMinutes")
+    private Integer reminderMinutes = 15;
+
+    @Builder.Default
+    @JsonProperty("recurrenceType")
+    private RecurrenceType recurrenceType = RecurrenceType.NONE;
+
+    private String password;
+
+    @JsonProperty("participantUserIds")
+    private List<String> participantUserIds;
+
+    @JsonProperty("participantEmails")
+    private List<String> participantEmails;
+
+    @Builder.Default
+    @JsonProperty("allowParticipantChat")
+    private boolean allowParticipantChat = true;
+
+    @Builder.Default
+    @JsonProperty("allowScreenSharing")
+    private boolean allowScreenSharing = true;
+
+    @Builder.Default
+    @JsonProperty("muteParticipantsOnEntry")
+    private boolean muteParticipantsOnEntry = false;
+
+    @Builder.Default
+    @JsonProperty("allowParticipantVideo")
+    private boolean allowParticipantVideo = true;
+
+    @Builder.Default
+    @JsonProperty("allowParticipantAudio")
+    private boolean allowParticipantAudio = true;
+
+    @Builder.Default
+    @JsonProperty("isOpenRoom")
+    private boolean isOpenRoom = false;
+
+    // Backward compatibility fields
     @JsonProperty("scheduled_at")
     private LocalDateTime scheduledAt;
 
     @JsonProperty("organization_id")
     private String organizationId;
 
-    public CreateMeetingRequest() {
-    }
-
-    public CreateMeetingRequest(String title, String description, LocalDateTime scheduledAt, String organizationId) {
-        this.title = title;
-        this.description = description;
-        this.scheduledAt = scheduledAt;
-        this.organizationId = organizationId;
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String title;
-        private String description;
-        private LocalDateTime scheduledAt;
-        private String organizationId;
-
-        public Builder title(String title) { this.title = title; return this; }
-        public Builder description(String description) { this.description = description; return this; }
-        public Builder scheduledAt(LocalDateTime scheduledAt) { this.scheduledAt = scheduledAt; return this; }
-        public Builder organizationId(String organizationId) { this.organizationId = organizationId; return this; }
-
-        public CreateMeetingRequest build() {
-            return new CreateMeetingRequest(title, description, scheduledAt, organizationId);
+    public LocalDateTime getScheduledStartTime() {
+        if (scheduledStartTime != null) {
+            return scheduledStartTime;
         }
+        return scheduledAt;
     }
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public LocalDateTime getScheduledAt() { return scheduledAt; }
-    public void setScheduledAt(LocalDateTime scheduledAt) { this.scheduledAt = scheduledAt; }
-
-    public String getOrganizationId() { return organizationId; }
-    public void setOrganizationId(String organizationId) { this.organizationId = organizationId; }
 }

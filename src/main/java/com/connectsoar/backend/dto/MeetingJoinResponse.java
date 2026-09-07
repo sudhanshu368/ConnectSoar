@@ -1,68 +1,63 @@
 package com.connectsoar.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MeetingJoinResponse {
 
-    @JsonProperty("meeting_id")
+    @JsonProperty("meetingId")
     private String meetingId;
 
-    @JsonProperty("room_id")
+    @JsonProperty("meetingCode")
+    private String meetingCode;
+
+    @JsonProperty("meetingUrl")
+    private String meetingUrl;
+
+    @JsonProperty("roomId")
     private String roomId;
 
-    @JsonProperty("meeting_token")
+    private String role;
+    private String status;
+
+    private MeetingPermissionsDto permissions;
+
+    @JsonProperty("sessionId")
+    private String sessionId;
+
+    @JsonProperty("meetingToken")
     private String meetingToken;
 
+    @JsonProperty("expiresIn")
+    private Long expiresIn;
+
+    // Backward compatibility aliases for JSON serialization where needed
+    @JsonProperty("meeting_id")
+    public String getSnakeMeetingId() {
+        return meetingId;
+    }
+
+    @JsonProperty("room_id")
+    public String getSnakeRoomId() {
+        return roomId;
+    }
+
+    @JsonProperty("meeting_token")
+    public String getSnakeMeetingToken() {
+        return meetingToken;
+    }
+
     @JsonProperty("expires_in")
-    private long expiresIn;
-
-    private String role;
-
-    public MeetingJoinResponse() {
+    public Long getSnakeExpiresIn() {
+        return expiresIn;
     }
-
-    public MeetingJoinResponse(String meetingId, String roomId, String meetingToken, long expiresIn, String role) {
-        this.meetingId = meetingId;
-        this.roomId = roomId;
-        this.meetingToken = meetingToken;
-        this.expiresIn = expiresIn;
-        this.role = role;
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String meetingId;
-        private String roomId;
-        private String meetingToken;
-        private long expiresIn;
-        private String role;
-
-        public Builder meetingId(String meetingId) { this.meetingId = meetingId; return this; }
-        public Builder roomId(String roomId) { this.roomId = roomId; return this; }
-        public Builder meetingToken(String meetingToken) { this.meetingToken = meetingToken; return this; }
-        public Builder expiresIn(long expiresIn) { this.expiresIn = expiresIn; return this; }
-        public Builder role(String role) { this.role = role; return this; }
-
-        public MeetingJoinResponse build() {
-            return new MeetingJoinResponse(meetingId, roomId, meetingToken, expiresIn, role);
-        }
-    }
-
-    public String getMeetingId() { return meetingId; }
-    public void setMeetingId(String meetingId) { this.meetingId = meetingId; }
-
-    public String getRoomId() { return roomId; }
-    public void setRoomId(String roomId) { this.roomId = roomId; }
-
-    public String getMeetingToken() { return meetingToken; }
-    public void setMeetingToken(String meetingToken) { this.meetingToken = meetingToken; }
-
-    public long getExpiresIn() { return expiresIn; }
-    public void setExpiresIn(long expiresIn) { this.expiresIn = expiresIn; }
-
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
 }

@@ -45,16 +45,30 @@ CREATE TABLE IF NOT EXISTS organization_members (
 -- 5. Meetings Table
 CREATE TABLE IF NOT EXISTS meetings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    organization_id UUID REFERENCES organizations(id) ON DELETE SET NULL,
+    meeting_code VARCHAR(50) UNIQUE NOT NULL,
+    meeting_url VARCHAR(500) UNIQUE NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    host_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-    status VARCHAR(50) NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'ongoing', 'completed', 'cancelled')),
-    scheduled_at TIMESTAMPTZ,
-    started_at TIMESTAMPTZ,
-    ended_at TIMESTAMPTZ,
+    meeting_type VARCHAR(50) NOT NULL DEFAULT 'INSTANT_ROOM' CHECK (meeting_type IN ('INSTANT_ROOM', 'SCHEDULED_MEETING')),
+    host_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    password_hash VARCHAR(255),
+    status VARCHAR(50) NOT NULL DEFAULT 'SCHEDULED' CHECK (status IN ('SCHEDULED', 'LIVE', 'COMPLETED', 'CANCELLED')),
+    scheduled_start_time TIMESTAMPTZ,
+    scheduled_end_time TIMESTAMPTZ,
+    duration_minutes INTEGER,
+    timezone VARCHAR(100) DEFAULT 'UTC',
+    reminder_minutes INTEGER DEFAULT 15,
+    recurrence_type VARCHAR(50) NOT NULL DEFAULT 'NONE' CHECK (recurrence_type IN ('NONE', 'DAILY', 'WEEKLY', 'MONTHLY')),
+    allow_participant_chat BOOLEAN NOT NULL DEFAULT TRUE,
+    allow_screen_sharing BOOLEAN NOT NULL DEFAULT TRUE,
+    mute_participants_on_entry BOOLEAN NOT NULL DEFAULT FALSE,
+    allow_participant_video BOOLEAN NOT NULL DEFAULT TRUE,
+    allow_participant_audio BOOLEAN NOT NULL DEFAULT TRUE,
+    is_open_room BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    started_at TIMESTAMPTZ,
+    ended_at TIMESTAMPTZ
 );
 
 -- 6. Meeting Participants Table
@@ -62,13 +76,57 @@ CREATE TABLE IF NOT EXISTS meeting_participants (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     meeting_id UUID NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-    permission VARCHAR(50) NOT NULL DEFAULT 'participant' CHECK (permission IN ('host', 'co_host', 'participant')),
+    participant_role VARCHAR(50) NOT NULL DEFAULT 'PARTICIPANT' CHECK (participant_role IN ('HOST', 'PARTICIPANT')),
+    status VARCHAR(50) NOT NULL DEFAULT 'INVITED' CHECK (status IN ('INVITED', 'ACCEPTED', 'DECLINED', 'JOINED', 'LEFT', 'REMOVED')),
+    invited_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    joined_at TIMESTAMPTZ,
+    left_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(meeting_id, user_id)
 );
 
--- 7. Audit Logs Table (Immutable security log)
+-- 7. Meeting Invitations Table
+CREATE TABLE IF NOT EXISTS meeting_invitations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    meeting_id UUID NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
+    email VARCHAR(255) NOT NULL,
+    user_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'ACCEPTED', 'DECLINED', 'CANCELLED')),
+    token VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(meeting_id, email)
+);
+
+-- 8. Meeting Sessions Table (Runtime state / presence)
+CREATE TABLE IF NOT EXISTS meeting_sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    meeting_id UUID NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    session_id VARCHAR(255) NOT NULL,
+    connection_status VARCHAR(50) NOT NULL DEFAULT 'CONNECTED',
+    microphone_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    camera_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    screen_sharing BOOLEAN NOT NULL DEFAULT FALSE,
+    joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    last_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    left_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 9. Meeting Messages Table (Chat persistence)
+CREATE TABLE IF NOT EXISTS meeting_messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    meeting_id UUID NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
+    sender_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 10. Audit Logs Table (Immutable security log)
 CREATE TABLE IF NOT EXISTS audit_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     actor_user_id VARCHAR(255) NOT NULL,
@@ -79,29 +137,46 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 8. Indexes
+-- 11. Indexes
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON profiles(email);
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON profiles(role);
 CREATE INDEX IF NOT EXISTS idx_profiles_status ON profiles(status);
 CREATE INDEX IF NOT EXISTS idx_profiles_department ON profiles(department);
 
-CREATE INDEX IF NOT EXISTS idx_meetings_host_id ON meetings(host_id);
+CREATE INDEX IF NOT EXISTS idx_meetings_code ON meetings(meeting_code);
+CREATE INDEX IF NOT EXISTS idx_meetings_host_user_id ON meetings(host_user_id);
 CREATE INDEX IF NOT EXISTS idx_meetings_status ON meetings(status);
-CREATE INDEX IF NOT EXISTS idx_meetings_org_id ON meetings(organization_id);
+CREATE INDEX IF NOT EXISTS idx_meetings_scheduled_start ON meetings(scheduled_start_time);
+CREATE INDEX IF NOT EXISTS idx_meetings_started_at ON meetings(started_at DESC);
+CREATE INDEX IF NOT EXISTS idx_meetings_ended_at ON meetings(ended_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_participants_meeting_id ON meeting_participants(meeting_id);
 CREATE INDEX IF NOT EXISTS idx_participants_user_id ON meeting_participants(user_id);
+CREATE INDEX IF NOT EXISTS idx_participants_status ON meeting_participants(status);
+
+CREATE INDEX IF NOT EXISTS idx_invitations_meeting_id ON meeting_invitations(meeting_id);
+CREATE INDEX IF NOT EXISTS idx_invitations_user_id ON meeting_invitations(user_id);
+CREATE INDEX IF NOT EXISTS idx_invitations_email ON meeting_invitations(email);
+
+CREATE INDEX IF NOT EXISTS idx_sessions_meeting_id ON meeting_sessions(meeting_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON meeting_sessions(user_id);
+
+CREATE INDEX IF NOT EXISTS idx_messages_meeting_id ON meeting_messages(meeting_id);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON meeting_messages(created_at ASC);
 
 CREATE INDEX IF NOT EXISTS idx_audit_actor ON audit_logs(actor_user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_logs(action);
 CREATE INDEX IF NOT EXISTS idx_audit_created_at ON audit_logs(created_at DESC);
 
--- 9. Row Level Security (RLS)
+-- 12. Row Level Security (RLS)
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE organization_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE meetings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE meeting_participants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE meeting_invitations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE meeting_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE meeting_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
 CREATE OR REPLACE FUNCTION is_admin()
@@ -114,21 +189,73 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Helper function to check if current user is host of a meeting (SECURITY DEFINER prevents RLS recursion)
+CREATE OR REPLACE FUNCTION is_meeting_host(m_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1 FROM meetings WHERE id = m_id AND host_user_id = auth.uid()
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Helper function to check if current user is participant of a meeting (SECURITY DEFINER prevents RLS recursion)
+CREATE OR REPLACE FUNCTION is_meeting_participant(m_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1 FROM meeting_participants WHERE meeting_id = m_id AND user_id = auth.uid()
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Policies
 CREATE POLICY "Profiles read policy" ON profiles FOR SELECT USING (auth.uid() = id OR is_admin());
 CREATE POLICY "Profiles update policy" ON profiles FOR UPDATE USING (auth.uid() = id OR is_admin());
 CREATE POLICY "Profiles insert policy" ON profiles FOR INSERT WITH CHECK (auth.uid() = id OR is_admin());
 
 CREATE POLICY "Meetings view policy" ON meetings FOR SELECT USING (
-    host_id = auth.uid() OR is_admin() OR EXISTS (SELECT 1 FROM meeting_participants WHERE meeting_id = meetings.id AND user_id = auth.uid())
+    host_user_id = auth.uid() 
+    OR is_admin() 
+    OR is_open_room = TRUE
+    OR is_meeting_participant(id)
 );
-CREATE POLICY "Meetings create policy" ON meetings FOR INSERT WITH CHECK (auth.uid() = host_id);
+CREATE POLICY "Meetings create policy" ON meetings FOR INSERT WITH CHECK (auth.uid() = host_user_id OR is_admin());
 CREATE POLICY "Meetings update policy" ON meetings FOR UPDATE USING (
-    host_id = auth.uid() OR is_admin() OR EXISTS (SELECT 1 FROM meeting_participants WHERE meeting_id = meetings.id AND user_id = auth.uid() AND permission = 'co_host')
+    host_user_id = auth.uid() OR is_admin()
+);
+CREATE POLICY "Meetings delete policy" ON meetings FOR DELETE USING (
+    host_user_id = auth.uid() OR is_admin()
 );
 
 CREATE POLICY "Participants view policy" ON meeting_participants FOR SELECT USING (
-    user_id = auth.uid() OR is_admin() OR EXISTS (SELECT 1 FROM meetings WHERE id = meeting_participants.meeting_id AND host_id = auth.uid())
+    user_id = auth.uid() 
+    OR is_admin() 
+    OR is_meeting_host(meeting_id)
+);
+
+CREATE POLICY "Participants insert policy" ON meeting_participants FOR INSERT WITH CHECK (
+    is_meeting_host(meeting_id) OR is_admin() OR user_id = auth.uid()
+);
+
+CREATE POLICY "Participants update policy" ON meeting_participants FOR UPDATE USING (
+    is_meeting_host(meeting_id) OR is_admin() OR user_id = auth.uid()
+);
+
+CREATE POLICY "Participants delete policy" ON meeting_participants FOR DELETE USING (
+    is_meeting_host(meeting_id) OR is_admin()
+);
+
+CREATE POLICY "Invitations view policy" ON meeting_invitations FOR SELECT USING (
+    user_id = auth.uid() 
+    OR is_admin() 
+    OR is_meeting_host(meeting_id)
+);
+
+CREATE POLICY "Messages view policy" ON meeting_messages FOR SELECT USING (
+    is_admin() 
+    OR is_meeting_host(meeting_id)
+    OR is_meeting_participant(meeting_id)
 );
 
 CREATE POLICY "Audit logs select policy" ON audit_logs FOR SELECT USING (is_admin());

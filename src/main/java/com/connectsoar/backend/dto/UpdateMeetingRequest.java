@@ -1,58 +1,65 @@
 package com.connectsoar.backend.dto;
 
+import com.connectsoar.backend.enums.RecurrenceType;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateMeetingRequest {
 
     private String title;
     private String description;
 
-    @JsonProperty("scheduled_at")
-    private LocalDateTime scheduledAt;
+    @JsonProperty("scheduledStartTime")
+    private LocalDateTime scheduledStartTime;
+
+    @JsonProperty("durationMinutes")
+    private Integer durationMinutes;
+
+    private String timezone;
+
+    @JsonProperty("reminderMinutes")
+    private Integer reminderMinutes;
+
+    @JsonProperty("recurrenceType")
+    private RecurrenceType recurrenceType;
 
     private String status;
 
-    public UpdateMeetingRequest() {
-    }
+    @JsonProperty("allowParticipantChat")
+    private Boolean allowParticipantChat;
 
-    public UpdateMeetingRequest(String title, String description, LocalDateTime scheduledAt, String status) {
-        this.title = title;
-        this.description = description;
-        this.scheduledAt = scheduledAt;
-        this.status = status;
-    }
+    @JsonProperty("allowScreenSharing")
+    private Boolean allowScreenSharing;
 
-    public static Builder builder() {
-        return new Builder();
-    }
+    @JsonProperty("muteParticipantsOnEntry")
+    private Boolean muteParticipantsOnEntry;
 
-    public static class Builder {
-        private String title;
-        private String description;
-        private LocalDateTime scheduledAt;
-        private String status;
+    @JsonProperty("allowParticipantVideo")
+    private Boolean allowParticipantVideo;
 
-        public Builder title(String title) { this.title = title; return this; }
-        public Builder description(String description) { this.description = description; return this; }
-        public Builder scheduledAt(LocalDateTime scheduledAt) { this.scheduledAt = scheduledAt; return this; }
-        public Builder status(String status) { this.status = status; return this; }
+    @JsonProperty("allowParticipantAudio")
+    private Boolean allowParticipantAudio;
 
-        public UpdateMeetingRequest build() {
-            return new UpdateMeetingRequest(title, description, scheduledAt, status);
+    @JsonProperty("isOpenRoom")
+    private Boolean isOpenRoom;
+
+    // Backward compatibility
+    @JsonProperty("scheduled_at")
+    private LocalDateTime scheduledAt;
+
+    public LocalDateTime getScheduledStartTime() {
+        if (scheduledStartTime != null) {
+            return scheduledStartTime;
         }
+        return scheduledAt;
     }
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public LocalDateTime getScheduledAt() { return scheduledAt; }
-    public void setScheduledAt(LocalDateTime scheduledAt) { this.scheduledAt = scheduledAt; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
 }

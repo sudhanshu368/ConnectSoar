@@ -655,7 +655,7 @@ public class AuthAndAuthorizationTests {
                 .andExpect(jsonPath("$.data.room_id").value("room-" + meeting.getId()))
                 .andExpect(jsonPath("$.data.meeting_token").isNotEmpty())
                 .andExpect(jsonPath("$.data.expires_in").value(900))
-                .andExpect(jsonPath("$.data.role").value("participant"))
+                .andExpect(jsonPath("$.data.role", org.hamcrest.Matchers.equalToIgnoringCase("participant")))
                 .andReturn();
 
         JsonNode root = objectMapper.readTree(result.getResponse().getContentAsString());

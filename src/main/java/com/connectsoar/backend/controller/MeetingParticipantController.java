@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/meetings/{meetingId}/participants")
+@RequestMapping({"/api/meetings/{meetingId}/participants", "/api/v1/meetings/{meetingId}/participants"})
 public class MeetingParticipantController {
 
     private static final Logger log = LoggerFactory.getLogger(MeetingParticipantController.class);
@@ -41,7 +41,7 @@ public class MeetingParticipantController {
             @RequestAttribute("userPrincipal") UserPrincipal principal,
             @Valid @RequestBody AddParticipantRequest request) {
         ParticipantResponse response = meetingService.addParticipant(principal, meetingId, request);
-        return new ResponseEntity<>(ApiResponse.ok("Participant added successfully.", response), HttpStatus.CREATED);
+        return new ResponseEntity<>(ApiResponse.ok("Participant added successfully", response), HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -59,7 +59,7 @@ public class MeetingParticipantController {
             @RequestAttribute("userPrincipal") UserPrincipal principal,
             @Valid @RequestBody UpdateParticipantRequest request) {
         ParticipantResponse response = meetingService.updateParticipantPermission(principal, meetingId, userId, request);
-        return ResponseEntity.ok(ApiResponse.ok("Participant permission updated successfully.", response));
+        return ResponseEntity.ok(ApiResponse.ok("Participant permission updated successfully", response));
     }
 
     @DeleteMapping("/{userId}")
@@ -68,6 +68,6 @@ public class MeetingParticipantController {
             @PathVariable("userId") String userId,
             @RequestAttribute("userPrincipal") UserPrincipal principal) {
         meetingService.removeParticipant(principal, meetingId, userId);
-        return ResponseEntity.ok(ApiResponse.okMessage("Participant removed successfully."));
+        return ResponseEntity.ok(ApiResponse.okMessage("Participant removed successfully"));
     }
 }
