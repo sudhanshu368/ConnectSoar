@@ -72,6 +72,9 @@ public class ProfileService {
         if (request.getDesignation() != null) {
             profile.setDesignation(request.getDesignation());
         }
+        if (request.getImageUrl() != null) {
+            profile.setImageUrl(request.getImageUrl());
+        }
 
         Profile saved = profileRepository.save(profile);
         return mapToUserDto(saved);

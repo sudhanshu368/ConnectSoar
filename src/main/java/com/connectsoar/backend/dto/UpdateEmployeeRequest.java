@@ -1,15 +1,21 @@
 package com.connectsoar.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UpdateEmployeeRequest {
 
+    @JsonAlias({"name", "fullName", "full_name"})
     private String name;
+
     private String department;
     private String designation;
+
+    @JsonAlias({"phone", "phoneNumber", "phone_number", "mobile", "contact_number"})
     private String phone;
 
     @JsonProperty("image_url")
+    @JsonAlias({"imageUrl", "image_url", "image", "avatar", "profile_image"})
     private String imageUrl;
 
     public UpdateEmployeeRequest() {
