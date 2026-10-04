@@ -154,7 +154,6 @@ public class MeetingService {
                 .agenda(request.getAgenda())
                 .plainPassword(request.getPassword())
                 .invitedUserIds(invitedList)
-                .isRecording(false)
                 .lobbyEnabled(request.isLobbyEnabled())
                 .pendingKnockUserIds(new ArrayList<>())
                 .admittedUserIds(new ArrayList<>())
@@ -950,62 +949,6 @@ public class MeetingService {
         meetingRepository.save(meeting);
     }
 
-    public RecordingStatusResponse startRecording(UserPrincipal user, String meetingId) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
-
-        verifyHostOrAdmin(user, meeting);
-
-        if (meeting.getStatus() != MeetingStatus.LIVE) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Recording can only be started when the meeting is live.", HttpStatus.BAD_REQUEST);
-        }
-
-        meeting.setRecording(true);
-        LocalDateTime now = LocalDateTime.now();
-        meeting.setRecordingStartedAt(now);
-        meetingRepository.save(meeting);
-
-        return RecordingStatusResponse.builder()
-                .meetingId(meetingId)
-                .isRecording(true)
-                .startedAt(now)
-                .message("Recording started successfully")
-                .build();
-    }
-
-    public RecordingStatusResponse stopRecording(UserPrincipal user, String meetingId) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
-
-        verifyHostOrAdmin(user, meeting);
-
-        meeting.setRecording(false);
-        meeting.setRecordingUrl(null); // Explicit requirement: recording is not saved in database
-        meeting.setRecordingStartedAt(null);
-        meetingRepository.save(meeting);
-
-        return RecordingStatusResponse.builder()
-                .meetingId(meetingId)
-                .isRecording(false)
-                .recordingUrl(null)
-                .message("Recording stopped. Not saved to database as requested.")
-                .build();
-    }
-
-    public RecordingStatusResponse getRecordingStatus(UserPrincipal user, String meetingId) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
-
-        verifyMeetingAccess(user, meeting);
-
-        return RecordingStatusResponse.builder()
-                .meetingId(meetingId)
-                .isRecording(meeting.isRecording())
-                .startedAt(meeting.getRecordingStartedAt())
-                .recordingUrl(meeting.getRecordingUrl())
-                .build();
-    }
-
     public void muteAll(UserPrincipal user, String meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
@@ -1100,8 +1043,6 @@ public class MeetingService {
                 .passwordProtected(meeting.getPasswordHash() != null)
                 .project(meeting.getProject())
                 .agenda(meeting.getAgenda())
-                .isRecording(meeting.isRecording())
-                .recordingUrl(meeting.getRecordingUrl())
                 .invitedUserIds(meeting.getInvitedUserIds())
                 .lobbyEnabled(meeting.isLobbyEnabled())
                 .pendingKnocks(pendingKnockDtos)

@@ -65,12 +65,6 @@ public class MeetingResponse {
     private String project;
     private String agenda;
 
-    @JsonProperty("isRecording")
-    private Boolean isRecording;
-
-    @JsonProperty("recordingUrl")
-    private String recordingUrl;
-
     @JsonProperty("invitedUserIds")
     private List<String> invitedUserIds;
 

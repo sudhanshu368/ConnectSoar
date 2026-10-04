@@ -187,30 +187,6 @@ public class MeetingController {
 
     // --- Recording Endpoints ---
 
-    @PostMapping("/{meetingId}/recording/start")
-    public ResponseEntity<ApiResponse<RecordingStatusResponse>> startRecording(
-            @PathVariable("meetingId") String meetingId,
-            @RequestAttribute("userPrincipal") UserPrincipal principal) {
-        RecordingStatusResponse res = meetingService.startRecording(principal, meetingId);
-        return ResponseEntity.ok(ApiResponse.ok(res));
-    }
-
-    @PostMapping("/{meetingId}/recording/stop")
-    public ResponseEntity<ApiResponse<RecordingStatusResponse>> stopRecording(
-            @PathVariable("meetingId") String meetingId,
-            @RequestAttribute("userPrincipal") UserPrincipal principal) {
-        RecordingStatusResponse res = meetingService.stopRecording(principal, meetingId);
-        return ResponseEntity.ok(ApiResponse.ok(res));
-    }
-
-    @GetMapping("/{meetingId}/recording")
-    public ResponseEntity<ApiResponse<RecordingStatusResponse>> getRecordingStatus(
-            @PathVariable("meetingId") String meetingId,
-            @RequestAttribute("userPrincipal") UserPrincipal principal) {
-        RecordingStatusResponse res = meetingService.getRecordingStatus(principal, meetingId);
-        return ResponseEntity.ok(ApiResponse.ok(res));
-    }
-
     // --- Host Moderation Endpoints ---
 
     @PostMapping("/{meetingId}/mute-all")
