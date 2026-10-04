@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS profiles (
     department VARCHAR(100),
     designation VARCHAR(100),
     phone VARCHAR(50),
+    address TEXT,
+    adhar_number VARCHAR(20),
     image_url TEXT,
     reset_password BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

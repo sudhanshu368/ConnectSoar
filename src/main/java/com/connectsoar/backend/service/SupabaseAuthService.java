@@ -329,11 +329,18 @@ public class SupabaseAuthService {
 
         String userId = UUID.randomUUID().toString();
 
+        Role assignedRole = Role.employee;
+        if (request.getRole() != null && !request.getRole().isBlank()) {
+            try {
+                assignedRole = Role.fromString(request.getRole());
+            } catch (Exception ignored) {}
+        }
+
         // 1. Provision user in Supabase Auth
         try {
             Map<String, Object> metadata = new HashMap<>();
             metadata.put("name", request.getName());
-            metadata.put("role", "employee");
+            metadata.put("role", assignedRole.name());
 
             Map<String, Object> body = new HashMap<>();
             body.put("email", request.getEmail());
@@ -357,17 +364,19 @@ public class SupabaseAuthService {
             log.warn("Supabase user creation note (fallback to local provisioning): {}", e.getMessage());
         }
 
-        // 2. Create Profile with strict defaults: role=employee, status=active, reset_password=true
+        // 2. Create Profile with address, adharNumber, and designated role
         Profile profile = Profile.builder()
                 .id(userId)
                 .email(request.getEmail())
                 .name(request.getName())
-                .role(Role.employee) // STRICTLY FORCED
-                .status(UserStatus.active) // STRICTLY FORCED
+                .role(assignedRole)
+                .status(UserStatus.active)
                 .department(request.getDepartment())
                 .designation(request.getDesignation())
                 .phone(request.getPhone())
-                .resetPassword(true) // STRICTLY FORCED
+                .address(request.getAddress())
+                .adharNumber(request.getAdharNumber())
+                .resetPassword(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

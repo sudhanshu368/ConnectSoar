@@ -3,6 +3,7 @@ package com.connectsoar.backend.enums;
 public enum AuditAction {
     EMPLOYEE_CREATED,
     EMPLOYEE_UPDATED,
+    EMPLOYEE_DELETED,
     EMPLOYEE_DISABLED,
     EMPLOYEE_ENABLED,
     ROLE_CHANGED,

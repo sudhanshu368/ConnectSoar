@@ -87,11 +87,15 @@ public class ProfileService {
     }
 
     public PagedResponse<UserDto> getEmployeesPaged(String search, UserStatus status, String department, int page, int limit) {
+        return getEmployeesPaged(search, status, department, null, page, limit);
+    }
+
+    public PagedResponse<UserDto> getEmployeesPaged(String search, UserStatus status, String department, Role role, int page, int limit) {
         int validatedPage = Math.max(1, page);
         int validatedLimit = Math.min(100, Math.max(1, limit));
 
-        List<Profile> employees = profileRepository.findEmployees(search, status, department, validatedPage, validatedLimit);
-        long total = profileRepository.countEmployees(search, status, department);
+        List<Profile> employees = profileRepository.findEmployees(search, status, department, role, validatedPage, validatedLimit);
+        long total = profileRepository.countEmployees(search, status, department, role);
         int totalPages = (int) Math.ceil((double) total / validatedLimit);
 
         List<UserDto> dtoList = employees.stream()
@@ -116,8 +120,11 @@ public class ProfileService {
         Profile profile = profileRepository.findById(employeeId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND, "Employee not found", HttpStatus.NOT_FOUND));
 
-        if (request.getName() != null) {
+        if (request.getName() != null && !request.getName().isBlank()) {
             profile.setName(request.getName());
+        }
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            profile.setEmail(request.getEmail());
         }
         if (request.getDepartment() != null) {
             profile.setDepartment(request.getDepartment());
@@ -127,6 +134,23 @@ public class ProfileService {
         }
         if (request.getPhone() != null) {
             profile.setPhone(request.getPhone());
+        }
+        if (request.getAddress() != null) {
+            profile.setAddress(request.getAddress());
+        }
+        if (request.getAdharNumber() != null) {
+            profile.setAdharNumber(request.getAdharNumber());
+        }
+        if (request.getRole() != null && !request.getRole().isBlank()) {
+            try {
+                Role newRole = Role.fromString(request.getRole());
+                if (employeeId.equals(actorUserId) && newRole != Role.admin) {
+                    throw new ApiException(ErrorCode.FORBIDDEN, "Admins cannot demote their own role.", HttpStatus.FORBIDDEN);
+                }
+                profile.setRole(newRole);
+            } catch (ApiException ae) {
+                throw ae;
+            } catch (Exception ignored) {}
         }
         if (request.getImageUrl() != null) {
             profile.setImageUrl(request.getImageUrl());
@@ -139,6 +163,24 @@ public class ProfileService {
         auditLogService.record(actorUserId, AuditAction.EMPLOYEE_UPDATED, "Profile", employeeId, meta);
 
         return mapToUserDto(saved);
+    }
+
+    public void deleteEmployee(String employeeId, String actorUserId) {
+        log.info("Admin {} deleting employee: {}", actorUserId, employeeId);
+        Profile profile = profileRepository.findById(employeeId)
+                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND, "Employee not found with id: " + employeeId, HttpStatus.NOT_FOUND));
+
+        if (employeeId.equals(actorUserId)) {
+            throw new ApiException(ErrorCode.FORBIDDEN, "Admins cannot delete their own account.", HttpStatus.FORBIDDEN);
+        }
+
+        profileRepository.deleteById(employeeId);
+
+        Map<String, Object> meta = new HashMap<>();
+        meta.put("deleted_by", actorUserId);
+        meta.put("email", profile.getEmail());
+        meta.put("name", profile.getName());
+        auditLogService.record(actorUserId, AuditAction.EMPLOYEE_DELETED, "Profile", employeeId, meta);
     }
 
     public UserDto updateEmployeeStatus(String employeeId, UserStatus status, String actorUserId) {
@@ -191,6 +233,8 @@ public class ProfileService {
                 .department(profile.getDepartment())
                 .designation(profile.getDesignation())
                 .phone(profile.getPhone())
+                .address(profile.getAddress())
+                .adharNumber(profile.getAdharNumber())
                 .imageUrl(profile.getImageUrl())
                 .resetPassword(profile.isResetPassword())
                 .createdAt(profile.getCreatedAt())

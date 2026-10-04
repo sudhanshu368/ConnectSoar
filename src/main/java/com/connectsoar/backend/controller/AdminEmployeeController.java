@@ -18,10 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,9 +60,11 @@ public class AdminEmployeeController {
             @RequestParam(name = "limit", defaultValue = "20") int limit,
             @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "status", required = false) String status,
-            @RequestParam(name = "department", required = false) String department) {
+            @RequestParam(name = "department", required = false) String department,
+            @RequestParam(name = "role", required = false) String role) {
         UserStatus userStatus = (status != null && !status.isBlank()) ? UserStatus.fromString(status) : null;
-        PagedResponse<UserDto> response = profileService.getEmployeesPaged(search, userStatus, department, page, limit);
+        Role userRole = (role != null && !role.isBlank()) ? Role.fromString(role) : null;
+        PagedResponse<UserDto> response = profileService.getEmployeesPaged(search, userStatus, department, userRole, page, limit);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
@@ -78,6 +82,24 @@ public class AdminEmployeeController {
             @RequestBody UpdateEmployeeRequest request) {
         UserDto updated = profileService.updateEmployee(employeeId, request, principal.getUserId());
         return ResponseEntity.ok(ApiResponse.ok("Employee updated successfully.", updated));
+    }
+
+    @PutMapping("/{employeeId}")
+    public ResponseEntity<ApiResponse<UserDto>> updateEmployeePut(
+            @PathVariable("employeeId") String employeeId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal,
+            @RequestBody UpdateEmployeeRequest request) {
+        UserDto updated = profileService.updateEmployee(employeeId, request, principal.getUserId());
+        return ResponseEntity.ok(ApiResponse.ok("Employee updated successfully.", updated));
+    }
+
+    @DeleteMapping("/{employeeId}")
+    public ResponseEntity<ApiResponse<Void>> deleteEmployee(
+            @PathVariable("employeeId") String employeeId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal) {
+        log.info("Admin {} deleting employee: {}", principal.getUserId(), employeeId);
+        profileService.deleteEmployee(employeeId, principal.getUserId());
+        return ResponseEntity.ok(ApiResponse.ok("Employee deleted successfully.", null));
     }
 
     @PatchMapping("/{employeeId}/status")

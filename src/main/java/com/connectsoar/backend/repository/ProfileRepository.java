@@ -56,13 +56,23 @@ public class ProfileRepository {
     }
 
     public List<Profile> findEmployees(String search, UserStatus status, String department, int page, int limit) {
+        return findEmployees(search, status, department, null, page, limit);
+    }
+
+    public List<Profile> findEmployees(String search, UserStatus status, String department, Role role, int page, int limit) {
+        final String searchLower = (search != null) ? search.trim().toLowerCase() : null;
         return profileStorage.values().stream()
-                .filter(p -> p.getRole() == Role.employee)
+                .filter(p -> role == null || p.getRole() == role)
                 .filter(p -> status == null || p.getStatus() == status)
-                .filter(p -> department == null || department.isBlank() || (p.getDepartment() != null && p.getDepartment().equalsIgnoreCase(department)))
-                .filter(p -> search == null || search.isBlank() || 
-                        (p.getName() != null && p.getName().toLowerCase().contains(search.toLowerCase())) ||
-                        (p.getEmail() != null && p.getEmail().toLowerCase().contains(search.toLowerCase())))
+                .filter(p -> department == null || department.isBlank() || (p.getDepartment() != null && p.getDepartment().equalsIgnoreCase(department.trim())))
+                .filter(p -> searchLower == null || searchLower.isEmpty() ||
+                        (p.getName() != null && p.getName().toLowerCase().contains(searchLower)) ||
+                        (p.getEmail() != null && p.getEmail().toLowerCase().contains(searchLower)) ||
+                        (p.getPhone() != null && p.getPhone().toLowerCase().contains(searchLower)) ||
+                        (p.getAddress() != null && p.getAddress().toLowerCase().contains(searchLower)) ||
+                        (p.getAdharNumber() != null && p.getAdharNumber().toLowerCase().contains(searchLower)) ||
+                        (p.getDepartment() != null && p.getDepartment().toLowerCase().contains(searchLower)) ||
+                        (p.getDesignation() != null && p.getDesignation().toLowerCase().contains(searchLower)))
                 .sorted(Comparator.comparing(Profile::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
                 .skip((long) (page - 1) * limit)
                 .limit(limit)
@@ -70,13 +80,23 @@ public class ProfileRepository {
     }
 
     public long countEmployees(String search, UserStatus status, String department) {
+        return countEmployees(search, status, department, null);
+    }
+
+    public long countEmployees(String search, UserStatus status, String department, Role role) {
+        final String searchLower = (search != null) ? search.trim().toLowerCase() : null;
         return profileStorage.values().stream()
-                .filter(p -> p.getRole() == Role.employee)
+                .filter(p -> role == null || p.getRole() == role)
                 .filter(p -> status == null || p.getStatus() == status)
-                .filter(p -> department == null || department.isBlank() || (p.getDepartment() != null && p.getDepartment().equalsIgnoreCase(department)))
-                .filter(p -> search == null || search.isBlank() || 
-                        (p.getName() != null && p.getName().toLowerCase().contains(search.toLowerCase())) ||
-                        (p.getEmail() != null && p.getEmail().toLowerCase().contains(search.toLowerCase())))
+                .filter(p -> department == null || department.isBlank() || (p.getDepartment() != null && p.getDepartment().equalsIgnoreCase(department.trim())))
+                .filter(p -> searchLower == null || searchLower.isEmpty() ||
+                        (p.getName() != null && p.getName().toLowerCase().contains(searchLower)) ||
+                        (p.getEmail() != null && p.getEmail().toLowerCase().contains(searchLower)) ||
+                        (p.getPhone() != null && p.getPhone().toLowerCase().contains(searchLower)) ||
+                        (p.getAddress() != null && p.getAddress().toLowerCase().contains(searchLower)) ||
+                        (p.getAdharNumber() != null && p.getAdharNumber().toLowerCase().contains(searchLower)) ||
+                        (p.getDepartment() != null && p.getDepartment().toLowerCase().contains(searchLower)) ||
+                        (p.getDesignation() != null && p.getDesignation().toLowerCase().contains(searchLower)))
                 .count();
     }
 

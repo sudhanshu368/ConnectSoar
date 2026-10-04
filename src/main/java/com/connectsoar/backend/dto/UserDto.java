@@ -13,6 +13,10 @@ public class UserDto {
     private String department;
     private String designation;
     private String phone;
+    private String address;
+
+    @JsonProperty("adhar_number")
+    private String adharNumber;
 
     @JsonProperty("image_url")
     private String imageUrl;
@@ -32,6 +36,12 @@ public class UserDto {
     public UserDto(String id, String email, String name, String role, String status, String department,
                    String designation, String phone, String imageUrl, boolean resetPassword,
                    LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this(id, email, name, role, status, department, designation, phone, null, null, imageUrl, resetPassword, createdAt, updatedAt);
+    }
+
+    public UserDto(String id, String email, String name, String role, String status, String department,
+                   String designation, String phone, String address, String adharNumber, String imageUrl,
+                   boolean resetPassword, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.email = email;
         this.name = name;
@@ -40,6 +50,8 @@ public class UserDto {
         this.department = department;
         this.designation = designation;
         this.phone = phone;
+        this.address = address;
+        this.adharNumber = adharNumber;
         this.imageUrl = imageUrl;
         this.resetPassword = resetPassword;
         this.createdAt = createdAt;
@@ -59,6 +71,8 @@ public class UserDto {
         private String department;
         private String designation;
         private String phone;
+        private String address;
+        private String adharNumber;
         private String imageUrl;
         private boolean resetPassword;
         private LocalDateTime createdAt;
@@ -72,13 +86,15 @@ public class UserDto {
         public Builder department(String department) { this.department = department; return this; }
         public Builder designation(String designation) { this.designation = designation; return this; }
         public Builder phone(String phone) { this.phone = phone; return this; }
+        public Builder address(String address) { this.address = address; return this; }
+        public Builder adharNumber(String adharNumber) { this.adharNumber = adharNumber; return this; }
         public Builder imageUrl(String imageUrl) { this.imageUrl = imageUrl; return this; }
         public Builder resetPassword(boolean resetPassword) { this.resetPassword = resetPassword; return this; }
         public Builder createdAt(LocalDateTime createdAt) { this.createdAt = createdAt; return this; }
         public Builder updatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; return this; }
 
         public UserDto build() {
-            return new UserDto(id, email, name, role, status, department, designation, phone, imageUrl, resetPassword, createdAt, updatedAt);
+            return new UserDto(id, email, name, role, status, department, designation, phone, address, adharNumber, imageUrl, resetPassword, createdAt, updatedAt);
         }
     }
 
@@ -105,6 +121,12 @@ public class UserDto {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getAdharNumber() { return adharNumber; }
+    public void setAdharNumber(String adharNumber) { this.adharNumber = adharNumber; }
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
