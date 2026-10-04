@@ -26,6 +26,7 @@ D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\CreateProfileRequest.ja
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\ForgotPasswordRequest.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\JoinCodeRequest.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\JoinMeetingRequest.java
+D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\LobbyRequestDto.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\LoginRequest.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\LoginSuccessData.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\MeetingHostDto.java
@@ -37,6 +38,7 @@ D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\PagedResponse.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\ParticipantResponse.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\PasswordChangeRequiredData.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\ProfileResponse.java
+D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\RecordingStatusResponse.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\RefreshTokenData.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\RefreshTokenRequest.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\UpdateEmployeeRequest.java

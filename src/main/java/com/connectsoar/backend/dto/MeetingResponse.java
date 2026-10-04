@@ -62,6 +62,24 @@ public class MeetingResponse {
 
     private MeetingPermissionsDto permissions;
 
+    private String project;
+    private String agenda;
+
+    @JsonProperty("isRecording")
+    private Boolean isRecording;
+
+    @JsonProperty("recordingUrl")
+    private String recordingUrl;
+
+    @JsonProperty("invitedUserIds")
+    private List<String> invitedUserIds;
+
+    @JsonProperty("lobbyEnabled")
+    private Boolean lobbyEnabled;
+
+    @JsonProperty("pendingKnocks")
+    private List<LobbyRequestDto> pendingKnocks;
+
     @JsonProperty("passwordProtected")
     private Boolean passwordProtected;
 

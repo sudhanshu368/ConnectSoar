@@ -4,13 +4,17 @@ import com.connectsoar.backend.dto.ApiResponse;
 import com.connectsoar.backend.dto.CreateMeetingRequest;
 import com.connectsoar.backend.dto.JoinCodeRequest;
 import com.connectsoar.backend.dto.JoinMeetingRequest;
+import com.connectsoar.backend.dto.LobbyRequestDto;
 import com.connectsoar.backend.dto.MeetingJoinResponse;
 import com.connectsoar.backend.dto.MeetingPageData;
 import com.connectsoar.backend.dto.MeetingResponse;
+import com.connectsoar.backend.dto.RecordingStatusResponse;
 import com.connectsoar.backend.dto.UpdateMeetingRequest;
 import com.connectsoar.backend.security.UserPrincipal;
 import com.connectsoar.backend.service.MeetingService;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -133,5 +137,105 @@ public class MeetingController {
             @RequestAttribute("userPrincipal") UserPrincipal principal) {
         meetingService.leaveMeeting(principal, meetingId);
         return ResponseEntity.ok(ApiResponse.okMessage("Left meeting successfully"));
+    }
+
+    // --- Lobby Endpoints ---
+
+    @PostMapping("/{meetingId}/lobby/knock")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> knock(
+            @PathVariable("meetingId") String meetingId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal,
+            @RequestBody(required = false) Map<String, String> body) {
+        String password = body != null ? body.get("password") : null;
+        Map<String, Object> result = meetingService.knock(principal, meetingId, password);
+        return ResponseEntity.ok(ApiResponse.ok("Knock sent", result));
+    }
+
+    @GetMapping("/{meetingId}/lobby/status")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> checkLobbyStatus(
+            @PathVariable("meetingId") String meetingId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal) {
+        Map<String, Object> result = meetingService.checkLobbyStatus(principal, meetingId);
+        return ResponseEntity.ok(ApiResponse.ok(result));
+    }
+
+    @GetMapping("/{meetingId}/lobby/requests")
+    public ResponseEntity<ApiResponse<List<LobbyRequestDto>>> getPendingKnocks(
+            @PathVariable("meetingId") String meetingId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal) {
+        List<LobbyRequestDto> list = meetingService.getPendingKnocks(principal, meetingId);
+        return ResponseEntity.ok(ApiResponse.ok(list));
+    }
+
+    @PostMapping("/{meetingId}/lobby/admit/{userId}")
+    public ResponseEntity<ApiResponse<Void>> admitParticipant(
+            @PathVariable("meetingId") String meetingId,
+            @PathVariable("userId") String userId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal) {
+        meetingService.admitParticipant(principal, meetingId, userId);
+        return ResponseEntity.ok(ApiResponse.okMessage("Participant admitted to meeting"));
+    }
+
+    @PostMapping("/{meetingId}/lobby/deny/{userId}")
+    public ResponseEntity<ApiResponse<Void>> denyParticipant(
+            @PathVariable("meetingId") String meetingId,
+            @PathVariable("userId") String userId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal) {
+        meetingService.denyParticipant(principal, meetingId, userId);
+        return ResponseEntity.ok(ApiResponse.okMessage("Participant entry denied"));
+    }
+
+    // --- Recording Endpoints ---
+
+    @PostMapping("/{meetingId}/recording/start")
+    public ResponseEntity<ApiResponse<RecordingStatusResponse>> startRecording(
+            @PathVariable("meetingId") String meetingId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal) {
+        RecordingStatusResponse res = meetingService.startRecording(principal, meetingId);
+        return ResponseEntity.ok(ApiResponse.ok(res));
+    }
+
+    @PostMapping("/{meetingId}/recording/stop")
+    public ResponseEntity<ApiResponse<RecordingStatusResponse>> stopRecording(
+            @PathVariable("meetingId") String meetingId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal) {
+        RecordingStatusResponse res = meetingService.stopRecording(principal, meetingId);
+        return ResponseEntity.ok(ApiResponse.ok(res));
+    }
+
+    @GetMapping("/{meetingId}/recording")
+    public ResponseEntity<ApiResponse<RecordingStatusResponse>> getRecordingStatus(
+            @PathVariable("meetingId") String meetingId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal) {
+        RecordingStatusResponse res = meetingService.getRecordingStatus(principal, meetingId);
+        return ResponseEntity.ok(ApiResponse.ok(res));
+    }
+
+    // --- Host Moderation Endpoints ---
+
+    @PostMapping("/{meetingId}/mute-all")
+    public ResponseEntity<ApiResponse<Void>> muteAll(
+            @PathVariable("meetingId") String meetingId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal) {
+        meetingService.muteAll(principal, meetingId);
+        return ResponseEntity.ok(ApiResponse.okMessage("All participants muted"));
+    }
+
+    @PostMapping("/{meetingId}/mute/{userId}")
+    public ResponseEntity<ApiResponse<Void>> muteParticipant(
+            @PathVariable("meetingId") String meetingId,
+            @PathVariable("userId") String userId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal) {
+        meetingService.muteParticipant(principal, meetingId, userId, true);
+        return ResponseEntity.ok(ApiResponse.okMessage("Participant muted"));
+    }
+
+    @PostMapping("/{meetingId}/unmute/{userId}")
+    public ResponseEntity<ApiResponse<Void>> unmuteParticipant(
+            @PathVariable("meetingId") String meetingId,
+            @PathVariable("userId") String userId,
+            @RequestAttribute("userPrincipal") UserPrincipal principal) {
+        meetingService.muteParticipant(principal, meetingId, userId, false);
+        return ResponseEntity.ok(ApiResponse.okMessage("Participant unmuted"));
     }
 }

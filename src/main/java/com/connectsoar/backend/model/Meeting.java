@@ -83,6 +83,38 @@ public class Meeting {
     @JsonProperty("is_open_room")
     private boolean isOpenRoom = false;
 
+    private String project;
+    private String agenda;
+
+    @JsonProperty("plain_password")
+    private String plainPassword;
+
+    @Builder.Default
+    @JsonProperty("invited_user_ids")
+    private java.util.List<String> invitedUserIds = new java.util.ArrayList<>();
+
+    @Builder.Default
+    @JsonProperty("is_recording")
+    private boolean isRecording = false;
+
+    @JsonProperty("recording_url")
+    private String recordingUrl;
+
+    @JsonProperty("recording_started_at")
+    private LocalDateTime recordingStartedAt;
+
+    @Builder.Default
+    @JsonProperty("lobby_enabled")
+    private boolean lobbyEnabled = true;
+
+    @Builder.Default
+    @JsonProperty("pending_knock_user_ids")
+    private java.util.List<String> pendingKnockUserIds = new java.util.ArrayList<>();
+
+    @Builder.Default
+    @JsonProperty("admitted_user_ids")
+    private java.util.List<String> admittedUserIds = new java.util.ArrayList<>();
+
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 

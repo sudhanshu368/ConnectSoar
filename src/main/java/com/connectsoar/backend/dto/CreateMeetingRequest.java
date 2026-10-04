@@ -23,6 +23,17 @@ public class CreateMeetingRequest {
 
     private String description;
 
+    @JsonAlias({"project", "projectName", "project_name"})
+    private String project;
+
+    @JsonAlias({"agenda", "meetingAgenda", "meeting_agenda"})
+    private String agenda;
+
+    @Builder.Default
+    @JsonProperty("lobbyEnabled")
+    @JsonAlias({"lobby_enabled", "lobbyEnabled", "enableLobby", "enable_lobby"})
+    private boolean lobbyEnabled = true;
+
     @Builder.Default
     @JsonProperty("meetingType")
     @JsonAlias({"meeting_type", "meetingType", "type"})

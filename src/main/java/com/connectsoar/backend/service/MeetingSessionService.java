@@ -106,4 +106,26 @@ public class MeetingSessionService {
     public List<MeetingSession> getActiveSessions(String meetingId) {
         return sessionRepository.findAllByMeetingId(meetingId);
     }
+
+    public void muteAllParticipants(String meetingId, String hostUserId) {
+        List<MeetingSession> sessions = sessionRepository.findAllByMeetingId(meetingId);
+        LocalDateTime now = LocalDateTime.now();
+        for (MeetingSession session : sessions) {
+            if (!session.getUserId().equals(hostUserId)) {
+                session.setMicrophoneEnabled(false);
+                session.setUpdatedAt(now);
+                sessionRepository.save(session);
+            }
+        }
+    }
+
+    public void muteParticipant(String meetingId, String userId, boolean muted) {
+        Optional<MeetingSession> sessionOpt = sessionRepository.findByMeetingIdAndUserId(meetingId, userId);
+        if (sessionOpt.isPresent()) {
+            MeetingSession session = sessionOpt.get();
+            session.setMicrophoneEnabled(!muted);
+            session.setUpdatedAt(LocalDateTime.now());
+            sessionRepository.save(session);
+        }
+    }
 }

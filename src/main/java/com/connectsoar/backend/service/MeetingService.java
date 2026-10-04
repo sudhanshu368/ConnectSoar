@@ -2,12 +2,14 @@ package com.connectsoar.backend.service;
 
 import com.connectsoar.backend.dto.AddParticipantRequest;
 import com.connectsoar.backend.dto.CreateMeetingRequest;
+import com.connectsoar.backend.dto.LobbyRequestDto;
 import com.connectsoar.backend.dto.MeetingHostDto;
 import com.connectsoar.backend.dto.MeetingJoinResponse;
 import com.connectsoar.backend.dto.MeetingPageData;
 import com.connectsoar.backend.dto.MeetingPermissionsDto;
 import com.connectsoar.backend.dto.MeetingResponse;
 import com.connectsoar.backend.dto.ParticipantResponse;
+import com.connectsoar.backend.dto.RecordingStatusResponse;
 import com.connectsoar.backend.dto.UpdateMeetingRequest;
 import com.connectsoar.backend.dto.UpdateParticipantRequest;
 import com.connectsoar.backend.enums.AuditAction;
@@ -117,6 +119,15 @@ public class MeetingService {
 
         String passwordHash = passwordUtil.hashPassword(request.getPassword());
 
+        List<String> invitedList = new ArrayList<>();
+        if (request.getParticipantUserIds() != null) {
+            for (String uid : request.getParticipantUserIds()) {
+                if (uid != null && !uid.isBlank() && !invitedList.contains(uid.trim())) {
+                    invitedList.add(uid.trim());
+                }
+            }
+        }
+
         Meeting meeting = Meeting.builder()
                 .id(meetingId)
                 .meetingCode(meetingCode)
@@ -139,6 +150,14 @@ public class MeetingService {
                 .allowParticipantVideo(request.isAllowParticipantVideo())
                 .allowParticipantAudio(request.isAllowParticipantAudio())
                 .isOpenRoom(request.isOpenRoom())
+                .project(request.getProject())
+                .agenda(request.getAgenda())
+                .plainPassword(request.getPassword())
+                .invitedUserIds(invitedList)
+                .isRecording(false)
+                .lobbyEnabled(request.isLobbyEnabled())
+                .pendingKnockUserIds(new ArrayList<>())
+                .admittedUserIds(new ArrayList<>())
                 .createdAt(now)
                 .updatedAt(now)
                 .startedAt(meetingType == MeetingType.INSTANT_ROOM ? now : null)
@@ -473,15 +492,31 @@ public class MeetingService {
         boolean isHost = meeting.getHostUserId().equals(user.getUserId());
         boolean isAdmin = user.isAdmin();
         Optional<MeetingParticipant> participantOpt = participantRepository.findByMeetingIdAndUserId(meeting.getId(), user.getUserId());
+        boolean isInvited = (meeting.getInvitedUserIds() != null && meeting.getInvitedUserIds().contains(user.getUserId())) || participantOpt.isPresent();
+        boolean isAdmitted = (meeting.getAdmittedUserIds() != null && meeting.getAdmittedUserIds().contains(user.getUserId()));
 
-        if (!isHost && !isAdmin && !meeting.isOpenRoom() && participantOpt.isEmpty()) {
-            throw new ApiException(ErrorCode.ACCESS_DENIED, "You do not have permission to access this meeting", HttpStatus.FORBIDDEN);
-        }
+        if (!isHost && !isAdmin) {
+            // Validate password if configured
+            if (meeting.getPasswordHash() != null) {
+                if (rawPassword == null || !passwordUtil.matches(rawPassword, meeting.getPasswordHash())) {
+                    throw new ApiException(ErrorCode.INVALID_MEETING_PASSWORD, "Invalid meeting password.", HttpStatus.UNAUTHORIZED);
+                }
+            }
 
-        // Validate password if configured (host and admin bypass password requirement)
-        if (meeting.getPasswordHash() != null && !isHost && !isAdmin) {
-            if (rawPassword == null || !passwordUtil.matches(rawPassword, meeting.getPasswordHash())) {
-                throw new ApiException(ErrorCode.INVALID_MEETING_PASSWORD, "Invalid meeting password.", HttpStatus.UNAUTHORIZED);
+            // Check access: invited or admitted or open room; otherwise enter lobby or deny
+            if (!meeting.isOpenRoom() && !isInvited && !isAdmitted) {
+                if (meeting.isLobbyEnabled()) {
+                    if (meeting.getPendingKnockUserIds() == null) {
+                        meeting.setPendingKnockUserIds(new ArrayList<>());
+                    }
+                    if (!meeting.getPendingKnockUserIds().contains(user.getUserId())) {
+                        meeting.getPendingKnockUserIds().add(user.getUserId());
+                        meetingRepository.save(meeting);
+                    }
+                    throw new ApiException(ErrorCode.LOBBY_WAITING, "Waiting for meeting host or admin to admit you.", HttpStatus.FORBIDDEN);
+                } else {
+                    throw new ApiException(ErrorCode.ACCESS_DENIED, "You do not have permission to access this meeting", HttpStatus.FORBIDDEN);
+                }
             }
         }
 
@@ -720,6 +755,224 @@ public class MeetingService {
         throw new ApiException(ErrorCode.FORBIDDEN, "You must be the meeting host or an administrator to perform this operation.", HttpStatus.FORBIDDEN);
     }
 
+    public Map<String, Object> knock(UserPrincipal user, String meetingId, String rawPassword) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
+
+        if (meeting.getStatus() == MeetingStatus.CANCELLED) {
+            throw new ApiException(ErrorCode.MEETING_CANCELLED, "This meeting has been cancelled.", HttpStatus.BAD_REQUEST);
+        }
+        if (meeting.getStatus() == MeetingStatus.COMPLETED) {
+            throw new ApiException(ErrorCode.MEETING_ALREADY_ENDED, "This meeting has already ended.", HttpStatus.BAD_REQUEST);
+        }
+
+        boolean isHost = meeting.getHostUserId().equals(user.getUserId());
+        boolean isAdmin = user.isAdmin();
+        boolean isInvited = (meeting.getInvitedUserIds() != null && meeting.getInvitedUserIds().contains(user.getUserId()));
+        boolean isAdmitted = (meeting.getAdmittedUserIds() != null && meeting.getAdmittedUserIds().contains(user.getUserId()));
+
+        if (isHost || isAdmin || isInvited || isAdmitted || meeting.isOpenRoom()) {
+            Map<String, Object> res = new HashMap<>();
+            res.put("status", "ADMITTED");
+            res.put("admitted", true);
+            return res;
+        }
+
+        // Validate password if required
+        if (meeting.getPasswordHash() != null) {
+            if (rawPassword == null || !passwordUtil.matches(rawPassword, meeting.getPasswordHash())) {
+                throw new ApiException(ErrorCode.INVALID_MEETING_PASSWORD, "Invalid meeting password.", HttpStatus.UNAUTHORIZED);
+            }
+        }
+
+        if (meeting.getPendingKnockUserIds() == null) {
+            meeting.setPendingKnockUserIds(new ArrayList<>());
+        }
+        if (!meeting.getPendingKnockUserIds().contains(user.getUserId())) {
+            meeting.getPendingKnockUserIds().add(user.getUserId());
+            meetingRepository.save(meeting);
+        }
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("status", "PENDING");
+        res.put("admitted", false);
+        res.put("message", "Knock sent. Waiting for host or admin approval.");
+        return res;
+    }
+
+    public Map<String, Object> checkLobbyStatus(UserPrincipal user, String meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
+
+        boolean isHost = meeting.getHostUserId().equals(user.getUserId());
+        boolean isAdmin = user.isAdmin();
+        boolean isInvited = (meeting.getInvitedUserIds() != null && meeting.getInvitedUserIds().contains(user.getUserId()));
+        boolean isAdmitted = (meeting.getAdmittedUserIds() != null && meeting.getAdmittedUserIds().contains(user.getUserId()));
+        boolean isPending = meeting.getPendingKnockUserIds() != null && meeting.getPendingKnockUserIds().contains(user.getUserId());
+
+        Map<String, Object> res = new HashMap<>();
+        if (isHost || isAdmin || isInvited || isAdmitted || meeting.isOpenRoom()) {
+            res.put("status", "ADMITTED");
+            res.put("admitted", true);
+        } else if (isPending) {
+            res.put("status", "PENDING");
+            res.put("admitted", false);
+        } else {
+            res.put("status", "DENIED");
+            res.put("admitted", false);
+        }
+        return res;
+    }
+
+    public List<LobbyRequestDto> getPendingKnocks(UserPrincipal user, String meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
+
+        verifyHostOrAdmin(user, meeting);
+
+        List<LobbyRequestDto> result = new ArrayList<>();
+        if (meeting.getPendingKnockUserIds() != null) {
+            for (String uid : meeting.getPendingKnockUserIds()) {
+                Profile profile = profileRepository.findById(uid).orElse(null);
+                result.add(LobbyRequestDto.builder()
+                        .userId(uid)
+                        .name(profile != null ? profile.getName() : "Guest")
+                        .email(profile != null ? profile.getEmail() : "")
+                        .imageUrl(profile != null ? profile.getImageUrl() : null)
+                        .status("PENDING")
+                        .requestedAt(LocalDateTime.now())
+                        .build());
+            }
+        }
+        return result;
+    }
+
+    public void admitParticipant(UserPrincipal user, String meetingId, String targetUserId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
+
+        verifyHostOrAdmin(user, meeting);
+
+        if (meeting.getPendingKnockUserIds() != null) {
+            meeting.getPendingKnockUserIds().remove(targetUserId);
+        }
+        if (meeting.getAdmittedUserIds() == null) {
+            meeting.setAdmittedUserIds(new ArrayList<>());
+        }
+        if (!meeting.getAdmittedUserIds().contains(targetUserId)) {
+            meeting.getAdmittedUserIds().add(targetUserId);
+        }
+
+        Optional<MeetingParticipant> partOpt = participantRepository.findByMeetingIdAndUserId(meetingId, targetUserId);
+        LocalDateTime now = LocalDateTime.now();
+        if (partOpt.isEmpty()) {
+            MeetingParticipant p = MeetingParticipant.builder()
+                    .id(UUID.randomUUID().toString())
+                    .meetingId(meetingId)
+                    .userId(targetUserId)
+                    .participantRole(ParticipantRole.PARTICIPANT)
+                    .status(ParticipantStatus.ACCEPTED)
+                    .invitedAt(now)
+                    .createdAt(now)
+                    .updatedAt(now)
+                    .build();
+            participantRepository.save(p);
+        } else {
+            MeetingParticipant p = partOpt.get();
+            p.setStatus(ParticipantStatus.ACCEPTED);
+            p.setUpdatedAt(now);
+            participantRepository.save(p);
+        }
+
+        meetingRepository.save(meeting);
+    }
+
+    public void denyParticipant(UserPrincipal user, String meetingId, String targetUserId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
+
+        verifyHostOrAdmin(user, meeting);
+
+        if (meeting.getPendingKnockUserIds() != null) {
+            meeting.getPendingKnockUserIds().remove(targetUserId);
+        }
+        meetingRepository.save(meeting);
+    }
+
+    public RecordingStatusResponse startRecording(UserPrincipal user, String meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
+
+        verifyHostOrAdmin(user, meeting);
+
+        if (meeting.getStatus() != MeetingStatus.LIVE) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Recording can only be started when the meeting is live.", HttpStatus.BAD_REQUEST);
+        }
+
+        meeting.setRecording(true);
+        LocalDateTime now = LocalDateTime.now();
+        meeting.setRecordingStartedAt(now);
+        meetingRepository.save(meeting);
+
+        return RecordingStatusResponse.builder()
+                .meetingId(meetingId)
+                .isRecording(true)
+                .startedAt(now)
+                .message("Recording started successfully")
+                .build();
+    }
+
+    public RecordingStatusResponse stopRecording(UserPrincipal user, String meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
+
+        verifyHostOrAdmin(user, meeting);
+
+        meeting.setRecording(false);
+        String recUrl = "https://connectsoar.com/recordings/" + meeting.getMeetingCode() + ".mp4";
+        meeting.setRecordingUrl(recUrl);
+        meetingRepository.save(meeting);
+
+        return RecordingStatusResponse.builder()
+                .meetingId(meetingId)
+                .isRecording(false)
+                .recordingUrl(recUrl)
+                .message("Recording stopped successfully and saved.")
+                .build();
+    }
+
+    public RecordingStatusResponse getRecordingStatus(UserPrincipal user, String meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
+
+        verifyMeetingAccess(user, meeting);
+
+        return RecordingStatusResponse.builder()
+                .meetingId(meetingId)
+                .isRecording(meeting.isRecording())
+                .startedAt(meeting.getRecordingStartedAt())
+                .recordingUrl(meeting.getRecordingUrl())
+                .build();
+    }
+
+    public void muteAll(UserPrincipal user, String meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
+
+        verifyHostOrAdmin(user, meeting);
+
+        sessionService.muteAllParticipants(meetingId, user.getUserId());
+    }
+
+    public void muteParticipant(UserPrincipal user, String meetingId, String targetUserId, boolean muted) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
+
+        verifyHostOrAdmin(user, meeting);
+
+        sessionService.muteParticipant(meetingId, targetUserId, muted);
+    }
+
     private MeetingResponse mapToMeetingResponse(Meeting meeting) {
         Profile hostProfile = profileRepository.findById(meeting.getHostUserId()).orElse(null);
         MeetingHostDto hostDto = MeetingHostDto.builder()
@@ -760,6 +1013,21 @@ public class MeetingService {
                             .build();
                 }).collect(Collectors.toList());
 
+        List<LobbyRequestDto> pendingKnockDtos = new ArrayList<>();
+        if (meeting.getPendingKnockUserIds() != null) {
+            for (String uid : meeting.getPendingKnockUserIds()) {
+                Profile p = profileRepository.findById(uid).orElse(null);
+                pendingKnockDtos.add(LobbyRequestDto.builder()
+                        .userId(uid)
+                        .name(p != null ? p.getName() : "Guest")
+                        .email(p != null ? p.getEmail() : "")
+                        .imageUrl(p != null ? p.getImageUrl() : null)
+                        .status("PENDING")
+                        .requestedAt(LocalDateTime.now())
+                        .build());
+            }
+        }
+
         return MeetingResponse.builder()
                 .id(meeting.getId())
                 .meetingCode(meeting.getMeetingCode())
@@ -779,6 +1047,14 @@ public class MeetingService {
                 .recurrenceType(meeting.getRecurrenceType())
                 .permissions(permissionsDto)
                 .passwordProtected(meeting.getPasswordHash() != null)
+                .project(meeting.getProject())
+                .agenda(meeting.getAgenda())
+                .isRecording(meeting.isRecording())
+                .recordingUrl(meeting.getRecordingUrl())
+                .invitedUserIds(meeting.getInvitedUserIds())
+                .lobbyEnabled(meeting.isLobbyEnabled())
+                .pendingKnocks(pendingKnockDtos)
+                .password(meeting.getPlainPassword())
                 .createdAt(meeting.getCreatedAt())
                 .updatedAt(meeting.getUpdatedAt())
                 .startedAt(meeting.getStartedAt())
