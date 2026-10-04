@@ -81,6 +81,12 @@ public class SupabaseAuthService {
         String accessToken = null;
         String refreshToken = null;
         Long expiresIn = 3600L;
+        String metaName = null;
+        String metaRole = null;
+        String metaDept = null;
+        String metaDesig = null;
+        String metaPhone = null;
+        String metaAvatar = null;
 
         // Try authenticating with Supabase Auth
         try {
@@ -103,8 +109,21 @@ public class SupabaseAuthService {
             refreshToken = root.has("refresh_token") ? root.get("refresh_token").asText() : null;
             expiresIn = root.has("expires_in") ? root.get("expires_in").asLong() : 3600L;
 
-            if (root.has("user") && root.get("user").has("id")) {
-                userId = root.get("user").get("id").asText();
+            if (root.has("user")) {
+                JsonNode userNode = root.get("user");
+                if (userNode.has("id")) {
+                    userId = userNode.get("id").asText();
+                }
+                if (userNode.has("user_metadata")) {
+                    JsonNode meta = userNode.get("user_metadata");
+                    if (meta.has("name")) metaName = meta.get("name").asText();
+                    if (meta.has("role")) metaRole = meta.get("role").asText();
+                    if (meta.has("department")) metaDept = meta.get("department").asText();
+                    if (meta.has("designation")) metaDesig = meta.get("designation").asText();
+                    if (meta.has("phone")) metaPhone = meta.get("phone").asText();
+                    if (meta.has("avatar_url")) metaAvatar = meta.get("avatar_url").asText();
+                    if (metaAvatar == null && meta.has("picture")) metaAvatar = meta.get("picture").asText();
+                }
             }
         } catch (ApiException e) {
             throw e;
@@ -113,21 +132,77 @@ public class SupabaseAuthService {
             throw new ApiException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.", HttpStatus.UNAUTHORIZED);
         }
 
+        // Determine correct role (Admin if codesoartechnologies@gmail.com or role in user_metadata)
+        Role resolvedRole = Role.employee;
+        if (request.getEmail().equalsIgnoreCase("codesoartechnologies@gmail.com")) {
+            resolvedRole = Role.admin;
+        } else if (metaRole != null && !metaRole.isBlank()) {
+            try {
+                resolvedRole = Role.fromString(metaRole);
+            } catch (Exception ignored) {}
+        }
+
+        final String effectiveUserId = (userId != null && !userId.isBlank()) ? userId : UUID.randomUUID().toString();
+        final String effectiveName = (metaName != null && !metaName.isBlank()) ? metaName : request.getEmail().split("@")[0];
+        final Role finalRole = resolvedRole;
+        final String finalDept = metaDept;
+        final String finalDesig = metaDesig;
+        final String finalPhone = metaPhone;
+        final String finalAvatar = metaAvatar;
+
         Profile profile = profileRepository.findByEmail(request.getEmail())
                 .orElseGet(() -> {
-                    // Create default profile if not present
                     Profile newP = Profile.builder()
-                            .id(UUID.randomUUID().toString())
+                            .id(effectiveUserId)
                             .email(request.getEmail())
-                            .name(request.getEmail().split("@")[0])
-                            .role(Role.employee)
+                            .name(effectiveName)
+                            .role(finalRole)
                             .status(UserStatus.active)
+                            .department(finalDept)
+                            .designation(finalDesig)
+                            .phone(finalPhone)
+                            .imageUrl(finalAvatar)
                             .resetPassword(false)
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .build();
                     return profileRepository.save(newP);
                 });
+
+        // Ensure in-memory profile reflects the real Supabase Auth ID and verified role/metadata
+        boolean profileChanged = false;
+        if (userId != null && !userId.equals(profile.getId())) {
+            profileRepository.deleteById(profile.getId());
+            profile.setId(userId);
+            profileChanged = true;
+        }
+        if (profile.getRole() != finalRole) {
+            profile.setRole(finalRole);
+            profileChanged = true;
+        }
+        if (metaName != null && !metaName.isBlank() && !metaName.equals(profile.getName())) {
+            profile.setName(metaName);
+            profileChanged = true;
+        }
+        if (metaDept != null && !metaDept.isBlank() && profile.getDepartment() == null) {
+            profile.setDepartment(metaDept);
+            profileChanged = true;
+        }
+        if (metaDesig != null && !metaDesig.isBlank() && profile.getDesignation() == null) {
+            profile.setDesignation(metaDesig);
+            profileChanged = true;
+        }
+        if (metaPhone != null && !metaPhone.isBlank() && profile.getPhone() == null) {
+            profile.setPhone(metaPhone);
+            profileChanged = true;
+        }
+        if (metaAvatar != null && !metaAvatar.isBlank() && profile.getImageUrl() == null) {
+            profile.setImageUrl(metaAvatar);
+            profileChanged = true;
+        }
+        if (profileChanged) {
+            profile = profileRepository.save(profile);
+        }
 
         // 1. Check account status
         if (profile.getStatus() == UserStatus.inactive) {
@@ -463,8 +538,30 @@ public class SupabaseAuthService {
             profileOpt = profileRepository.findByEmail(email);
         }
 
-        Profile profile = profileOpt.orElseThrow(() -> 
-                new ApiException(ErrorCode.USER_NOT_FOUND, "User profile not found for authenticated token.", HttpStatus.UNAUTHORIZED));
+        Profile profile;
+        if (profileOpt.isPresent()) {
+            profile = profileOpt.get();
+        } else {
+            Role roleToSet = (email != null && email.equalsIgnoreCase("codesoartechnologies@gmail.com"))
+                    ? Role.admin : Role.employee;
+            profile = Profile.builder()
+                    .id(userId)
+                    .email(email != null ? email : userId + "@connectsoar.com")
+                    .name(email != null ? email.split("@")[0] : "User")
+                    .role(roleToSet)
+                    .status(UserStatus.active)
+                    .resetPassword(false)
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .build();
+            profile = profileRepository.save(profile);
+        }
+
+        // Always ensure codesoartechnologies@gmail.com has admin role
+        if (profile.getEmail() != null && profile.getEmail().equalsIgnoreCase("codesoartechnologies@gmail.com") && profile.getRole() != Role.admin) {
+            profile.setRole(Role.admin);
+            profile = profileRepository.save(profile);
+        }
 
         // Enforce live status check
         if (profile.getStatus() == UserStatus.inactive) {

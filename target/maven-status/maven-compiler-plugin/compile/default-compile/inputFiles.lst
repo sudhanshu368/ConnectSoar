@@ -9,6 +9,7 @@ D:\ConnectSoar\src\main\java\com\connectsoar\backend\controller\MeetingChatContr
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\controller\MeetingController.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\controller\MeetingParticipantController.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\controller\ProfileController.java
+D:\ConnectSoar\src\main\java\com\connectsoar\backend\controller\UserController.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\AddParticipantRequest.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\ApiError.java
 D:\ConnectSoar\src\main\java\com\connectsoar\backend\dto\ApiResponse.java

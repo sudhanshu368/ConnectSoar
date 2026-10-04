@@ -222,6 +222,12 @@ public class ProfileService {
         return mapToUserDto(saved);
     }
 
+    public List<UserDto> getAllUsers() {
+        return profileRepository.findAll().stream()
+                .map(this::mapToUserDto)
+                .collect(Collectors.toList());
+    }
+
     public UserDto mapToUserDto(Profile profile) {
         if (profile == null) return null;
         return UserDto.builder()

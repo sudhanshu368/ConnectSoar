@@ -1,6 +1,5 @@
 com\connectsoar\backend\dto\UserDto$Builder.class
 com\connectsoar\backend\enums\Role.class
-com\connectsoar\backend\websocket\WebSocketAuthInterceptor.class
 com\connectsoar\backend\scheduler\MeetingLifecycleScheduler.class
 com\connectsoar\backend\dto\LoginRequest.class
 com\connectsoar\backend\service\MeetingChatService.class
@@ -32,7 +31,6 @@ com\connectsoar\backend\service\RateLimitService$TokenBucket.class
 com\connectsoar\backend\enums\MeetingPermission.class
 com\connectsoar\backend\enums\MeetingStatus.class
 com\connectsoar\backend\model\MeetingSession.class
-com\connectsoar\backend\controller\AdminEmployeeController.class
 com\connectsoar\backend\dto\CreateEmployeeAdminRequest$Builder.class
 com\connectsoar\backend\dto\CreateEmployeeResponse$Builder.class
 com\connectsoar\backend\repository\MeetingSessionRepository.class
@@ -41,7 +39,6 @@ com\connectsoar\backend\dto\MeetingPermissionsDto.class
 com\connectsoar\backend\dto\ForgotPasswordRequest$Builder.class
 com\connectsoar\backend\dto\PasswordChangeRequiredData.class
 com\connectsoar\backend\repository\ProfileRepository.class
-com\connectsoar\backend\controller\AuthController.class
 com\connectsoar\backend\security\JwtTokenProvider.class
 com\connectsoar\backend\dto\ApiResponse$Builder.class
 com\connectsoar\backend\controller\MeetingParticipantController.class
@@ -117,13 +114,11 @@ com\connectsoar\backend\model\Profile.class
 com\connectsoar\backend\controller\MeetingController.class
 com\connectsoar\backend\dto\JoinCodeRequest.class
 com\connectsoar\backend\model\OrganizationMember$Builder.class
-com\connectsoar\backend\service\SupabaseAuthService.class
 com\connectsoar\backend\dto\ChangePasswordRequest$Builder.class
 com\connectsoar\backend\model\Organization.class
 com\connectsoar\backend\model\MeetingMessage.class
 com\connectsoar\backend\dto\PagedResponse$PaginationMeta.class
 com\connectsoar\backend\repository\MeetingInvitationRepository.class
-com\connectsoar\backend\config\WebSocketConfig.class
 com\connectsoar\backend\dto\UpdateProfileRequest.class
 com\connectsoar\backend\model\MeetingParticipant$MeetingParticipantBuilder.class
 com\connectsoar\backend\dto\PagedResponse$Builder.class

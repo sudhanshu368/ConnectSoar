@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/profile")
+@RequestMapping({"/api/v1/profile", "/api/profile"})
 public class ProfileController {
 
     private static final Logger log = LoggerFactory.getLogger(ProfileController.class);
