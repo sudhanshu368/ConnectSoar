@@ -360,6 +360,9 @@ public class MeetingService {
         if (request.getIsOpenRoom() != null) {
             meeting.setIsOpenRoom(request.getIsOpenRoom());
         }
+        if (request.getLobbyEnabled() != null) {
+            meeting.setLobbyEnabled(request.getLobbyEnabled());
+        }
         if (request.getStatus() != null) {
             MeetingStatus newStatus = MeetingStatus.fromString(request.getStatus());
             meeting.setStatus(newStatus);

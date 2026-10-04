@@ -52,6 +52,9 @@ public class UpdateMeetingRequest {
     @JsonProperty("isOpenRoom")
     private Boolean isOpenRoom;
 
+    @JsonProperty("lobbyEnabled")
+    private Boolean lobbyEnabled;
+
     // Backward compatibility
     @JsonProperty("scheduled_at")
     private LocalDateTime scheduledAt;

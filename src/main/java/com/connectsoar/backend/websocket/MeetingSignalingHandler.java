@@ -164,6 +164,48 @@ public class MeetingSignalingHandler extends TextWebSocketHandler {
             return;
         }
 
+        if ("REACTION".equals(messageType)) {
+            String emoji = rootNode.path("emoji").asText("👍");
+            String senderName = rootNode.path("senderName").asText(principal.getName());
+            Map<String, Object> reactionBroadcast = new HashMap<>();
+            reactionBroadcast.put("type", "REACTION");
+            reactionBroadcast.put("meetingId", meetingId);
+            reactionBroadcast.put("emoji", emoji);
+            reactionBroadcast.put("senderName", senderName);
+            reactionBroadcast.put("senderUserId", principal.getUserId());
+            broadcastToRoom(meetingId, session, reactionBroadcast); // Broadcast to other participants
+            return;
+        }
+
+        if ("ROOM_SETTINGS".equals(messageType) || "SETTINGS_CHANGED".equals(messageType)) {
+            if (isHost || isAdmin) {
+                if (rootNode.has("allowChat")) {
+                    meeting.setAllowParticipantChat(rootNode.get("allowChat").asBoolean());
+                }
+                if (rootNode.has("allowScreenShare")) {
+                    meeting.setAllowScreenSharing(rootNode.get("allowScreenShare").asBoolean());
+                }
+                if (rootNode.has("muteOnEntry")) {
+                    meeting.setMuteParticipantsOnEntry(rootNode.get("muteOnEntry").asBoolean());
+                }
+                if (rootNode.has("lobbyEnabled")) {
+                    meeting.setLobbyEnabled(rootNode.get("lobbyEnabled").asBoolean());
+                }
+                meetingRepository.save(meeting);
+
+                Map<String, Object> settingsBroadcast = new HashMap<>();
+                settingsBroadcast.put("type", "ROOM_SETTINGS");
+                settingsBroadcast.put("meetingId", meetingId);
+                settingsBroadcast.put("allowChat", meeting.isAllowParticipantChat());
+                settingsBroadcast.put("allowScreenShare", meeting.isAllowScreenSharing());
+                settingsBroadcast.put("muteOnEntry", meeting.isMuteParticipantsOnEntry());
+                settingsBroadcast.put("lobbyEnabled", meeting.isLobbyEnabled());
+
+                broadcastToRoom(meetingId, session, settingsBroadcast); // Broadcast to other participants
+            }
+            return;
+        }
+
         if ("MEDIA_STATE_CHANGED".equals(messageType) || "MUTE".equals(messageType) || "UNMUTE".equals(messageType) ||
                 "CAMERA_ON".equals(messageType) || "CAMERA_OFF".equals(messageType) ||
                 "SCREEN_SHARE_STARTED".equals(messageType) || "SCREEN_SHARE_STOPPED".equals(messageType)) {
