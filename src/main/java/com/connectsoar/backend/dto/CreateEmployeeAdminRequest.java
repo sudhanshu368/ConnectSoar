@@ -25,15 +25,27 @@ public class CreateEmployeeAdminRequest {
 
     private String role; // "admin" or "employee", defaults to "employee"
 
+    private String password;
+
+    @JsonProperty("image_url")
+    @JsonAlias({"imageUrl", "image_url", "image", "avatar", "profile_image"})
+    private String imageUrl;
+
     public CreateEmployeeAdminRequest() {
     }
 
     public CreateEmployeeAdminRequest(String name, String email, String department, String designation, String phone) {
-        this(name, email, department, designation, phone, null, null, null);
+        this(name, email, department, designation, phone, null, null, null, null, null);
     }
 
     public CreateEmployeeAdminRequest(String name, String email, String department, String designation,
                                       String phone, String address, String adharNumber, String role) {
+        this(name, email, department, designation, phone, address, adharNumber, role, null, null);
+    }
+
+    public CreateEmployeeAdminRequest(String name, String email, String department, String designation,
+                                      String phone, String address, String adharNumber, String role,
+                                      String password, String imageUrl) {
         this.name = name;
         this.email = email;
         this.department = department;
@@ -42,6 +54,8 @@ public class CreateEmployeeAdminRequest {
         this.address = address;
         this.adharNumber = adharNumber;
         this.role = role;
+        this.password = password;
+        this.imageUrl = imageUrl;
     }
 
     public static Builder builder() {
@@ -57,6 +71,8 @@ public class CreateEmployeeAdminRequest {
         private String address;
         private String adharNumber;
         private String role;
+        private String password;
+        private String imageUrl;
 
         public Builder name(String name) { this.name = name; return this; }
         public Builder email(String email) { this.email = email; return this; }
@@ -66,9 +82,11 @@ public class CreateEmployeeAdminRequest {
         public Builder address(String address) { this.address = address; return this; }
         public Builder adharNumber(String adharNumber) { this.adharNumber = adharNumber; return this; }
         public Builder role(String role) { this.role = role; return this; }
+        public Builder password(String password) { this.password = password; return this; }
+        public Builder imageUrl(String imageUrl) { this.imageUrl = imageUrl; return this; }
 
         public CreateEmployeeAdminRequest build() {
-            return new CreateEmployeeAdminRequest(name, email, department, designation, phone, address, adharNumber, role);
+            return new CreateEmployeeAdminRequest(name, email, department, designation, phone, address, adharNumber, role, password, imageUrl);
         }
     }
 
@@ -95,4 +113,10 @@ public class CreateEmployeeAdminRequest {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

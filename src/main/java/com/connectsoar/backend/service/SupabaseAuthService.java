@@ -337,14 +337,25 @@ public class SupabaseAuthService {
         }
 
         // 1. Provision user in Supabase Auth
+        String passwordToUse;
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            passwordToUse = request.getPassword().trim();
+        } else {
+            int randomPin = 100000 + new java.security.SecureRandom().nextInt(900000);
+            passwordToUse = "Emp@" + randomPin + "!";
+        }
+
         try {
             Map<String, Object> metadata = new HashMap<>();
             metadata.put("name", request.getName());
             metadata.put("role", assignedRole.name());
+            if (request.getImageUrl() != null && !request.getImageUrl().isBlank()) {
+                metadata.put("avatar_url", request.getImageUrl());
+            }
 
             Map<String, Object> body = new HashMap<>();
             body.put("email", request.getEmail());
-            body.put("password", "TempPass" + UUID.randomUUID().toString().substring(0, 8) + "!");
+            body.put("password", passwordToUse);
             body.put("data", metadata);
 
             String jsonResponse = supabaseRestClient.post()
@@ -364,7 +375,7 @@ public class SupabaseAuthService {
             log.warn("Supabase user creation note (fallback to local provisioning): {}", e.getMessage());
         }
 
-        // 2. Create Profile with address, adharNumber, and designated role
+        // 2. Create Profile with address, adharNumber, imageUrl, and designated role
         Profile profile = Profile.builder()
                 .id(userId)
                 .email(request.getEmail())
@@ -376,6 +387,7 @@ public class SupabaseAuthService {
                 .phone(request.getPhone())
                 .address(request.getAddress())
                 .adharNumber(request.getAdharNumber())
+                .imageUrl(request.getImageUrl())
                 .resetPassword(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -389,7 +401,9 @@ public class SupabaseAuthService {
             meta.put("created_by", adminUserId);
             auditLogService.record(adminUserId, AuditAction.EMPLOYEE_CREATED, "Profile", saved.getId(), meta);
 
-            return profileService.mapToUserDto(saved);
+            UserDto userDto = profileService.mapToUserDto(saved);
+            userDto.setTemporaryPassword(passwordToUse);
+            return userDto;
         } catch (Exception e) {
             // Rollback cleanup
             log.error("Failed to save profile for new employee, rolling back: {}", e.getMessage());

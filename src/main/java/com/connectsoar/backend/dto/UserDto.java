@@ -24,6 +24,9 @@ public class UserDto {
     @JsonProperty("reset_password")
     private boolean resetPassword;
 
+    @JsonProperty("temporary_password")
+    private String temporaryPassword;
+
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
@@ -133,6 +136,9 @@ public class UserDto {
 
     public boolean isResetPassword() { return resetPassword; }
     public void setResetPassword(boolean resetPassword) { this.resetPassword = resetPassword; }
+
+    public String getTemporaryPassword() { return temporaryPassword; }
+    public void setTemporaryPassword(String temporaryPassword) { this.temporaryPassword = temporaryPassword; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

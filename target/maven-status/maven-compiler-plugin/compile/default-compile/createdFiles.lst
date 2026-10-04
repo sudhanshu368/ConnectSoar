@@ -58,6 +58,7 @@ com\connectsoar\backend\dto\PasswordChangeRequiredData$Builder.class
 com\connectsoar\backend\security\RequireRole.class
 com\connectsoar\backend\dto\RefreshTokenData.class
 com\connectsoar\backend\model\Meeting$MeetingBuilder.class
+com\connectsoar\backend\controller\HealthController.class
 com\connectsoar\backend\service\StorageService.class
 com\connectsoar\backend\dto\MeetingHostDto.class
 com\connectsoar\backend\dto\UpdateEmployeeRequest.class
