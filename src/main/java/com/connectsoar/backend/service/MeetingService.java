@@ -694,13 +694,24 @@ public class MeetingService {
     }
 
     public List<ParticipantResponse> getParticipants(UserPrincipal user, String meetingId) {
+        return getParticipants(user, meetingId, false);
+    }
+
+    public List<ParticipantResponse> getParticipants(UserPrincipal user, String meetingId, Boolean activeOnly) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "Meeting not found", HttpStatus.NOT_FOUND));
 
         verifyMeetingAccess(user, meeting);
 
         List<MeetingParticipant> participants = participantRepository.findAllByMeetingId(meetingId);
-        return participants.stream().map(p -> {
+        return participants.stream()
+                .filter(p -> {
+                    if (Boolean.TRUE.equals(activeOnly)) {
+                        return p.getStatus() == ParticipantStatus.JOINED;
+                    }
+                    return true;
+                })
+                .map(p -> {
             Optional<Profile> userProfile = profileRepository.findById(p.getUserId());
             return ParticipantResponse.builder()
                     .id(p.getId())
@@ -969,15 +980,15 @@ public class MeetingService {
         verifyHostOrAdmin(user, meeting);
 
         meeting.setRecording(false);
-        String recUrl = "https://connectsoar.com/recordings/" + meeting.getMeetingCode() + ".mp4";
-        meeting.setRecordingUrl(recUrl);
+        meeting.setRecordingUrl(null); // Explicit requirement: recording is not saved in database
+        meeting.setRecordingStartedAt(null);
         meetingRepository.save(meeting);
 
         return RecordingStatusResponse.builder()
                 .meetingId(meetingId)
                 .isRecording(false)
-                .recordingUrl(recUrl)
-                .message("Recording stopped successfully and saved.")
+                .recordingUrl(null)
+                .message("Recording stopped. Not saved to database as requested.")
                 .build();
     }
 

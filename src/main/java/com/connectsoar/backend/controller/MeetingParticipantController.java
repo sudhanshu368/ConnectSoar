@@ -47,8 +47,9 @@ public class MeetingParticipantController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<ParticipantResponse>>> getParticipants(
             @PathVariable("meetingId") String meetingId,
-            @RequestAttribute("userPrincipal") UserPrincipal principal) {
-        List<ParticipantResponse> response = meetingService.getParticipants(principal, meetingId);
+            @RequestAttribute("userPrincipal") UserPrincipal principal,
+            @RequestParam(value = "activeOnly", required = false) Boolean activeOnly) {
+        List<ParticipantResponse> response = meetingService.getParticipants(principal, meetingId, activeOnly);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
