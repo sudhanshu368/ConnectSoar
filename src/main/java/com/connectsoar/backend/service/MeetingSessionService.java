@@ -128,4 +128,25 @@ public class MeetingSessionService {
             sessionRepository.save(session);
         }
     }
+
+    public List<MeetingSession> getActiveSessionsByUserId(String userId) {
+        return sessionRepository.findAllByUserId(userId).stream()
+                .filter(s -> "CONNECTED".equalsIgnoreCase(s.getConnectionStatus()))
+                .toList();
+    }
+
+    public void markAllSessionsLeft(String meetingId) {
+        List<MeetingSession> sessions = sessionRepository.findAllByMeetingId(meetingId);
+        LocalDateTime now = LocalDateTime.now();
+        for (MeetingSession session : sessions) {
+            session.setConnectionStatus("DISCONNECTED");
+            session.setLeftAt(now);
+            session.setUpdatedAt(now);
+            sessionRepository.save(session);
+        }
+    }
+
+    public MeetingSession saveSession(MeetingSession session) {
+        return sessionRepository.save(session);
+    }
 }

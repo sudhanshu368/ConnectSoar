@@ -441,6 +441,11 @@ public class MeetingService {
             }
         }
 
+        // Disconnect all live sessions for this meeting
+        sessionService.markAllSessionsLeft(meetingId);
+
+        auditLogService.record(user.getUserId(), AuditAction.MEETING_ENDED, "Meeting", meetingId, null);
+
         return mapToMeetingResponse(saved);
     }
 
@@ -479,6 +484,38 @@ public class MeetingService {
         }
 
         sessionService.markUserLeft(meetingId, user.getUserId());
+    }
+
+    private void leaveAnyActiveMeeting(UserPrincipal user, String newMeetingId) {
+        String userId = user.getUserId();
+        LocalDateTime now = LocalDateTime.now();
+
+        // 1. Leave any other meeting where user status is JOINED
+        List<MeetingParticipant> participants = participantRepository.findAllByUserId(userId);
+        for (MeetingParticipant p : participants) {
+            if (!p.getMeetingId().equals(newMeetingId) && p.getStatus() == ParticipantStatus.JOINED) {
+                log.info("User {} is currently active in meeting {}. Automatically leaving to join meeting {}",
+                        userId, p.getMeetingId(), newMeetingId);
+                p.setStatus(ParticipantStatus.LEFT);
+                p.setLeftAt(now);
+                p.setUpdatedAt(now);
+                participantRepository.save(p);
+                sessionService.markUserLeft(p.getMeetingId(), userId);
+            }
+        }
+
+        // 2. Disconnect any other active sessions in other meetings
+        List<MeetingSession> activeSessions = sessionService.getActiveSessionsByUserId(userId);
+        for (MeetingSession s : activeSessions) {
+            if (!s.getMeetingId().equals(newMeetingId)) {
+                log.info("Disconnecting session {} in meeting {} for user {}",
+                        s.getSessionId(), s.getMeetingId(), userId);
+                s.setConnectionStatus("DISCONNECTED");
+                s.setLeftAt(now);
+                s.setUpdatedAt(now);
+                sessionService.saveSession(s);
+            }
+        }
     }
 
     private MeetingJoinResponse executeJoin(UserPrincipal user, Meeting meeting, String rawPassword) {
@@ -526,6 +563,9 @@ public class MeetingService {
             meeting.setStartedAt(LocalDateTime.now());
             meetingRepository.save(meeting);
         }
+
+        // 1 user can only join 1 meeting at a time: automatically leave any other active meeting
+        leaveAnyActiveMeeting(user, meeting.getId());
 
         // Update participant record
         LocalDateTime now = LocalDateTime.now();

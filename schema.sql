@@ -67,6 +67,16 @@ CREATE TABLE IF NOT EXISTS meetings (
     allow_participant_video BOOLEAN NOT NULL DEFAULT TRUE,
     allow_participant_audio BOOLEAN NOT NULL DEFAULT TRUE,
     is_open_room BOOLEAN NOT NULL DEFAULT FALSE,
+    project VARCHAR(255),
+    agenda TEXT,
+    plain_password VARCHAR(255),
+    invited_user_ids JSONB DEFAULT '[]'::jsonb,
+    is_recording BOOLEAN NOT NULL DEFAULT FALSE,
+    recording_url TEXT,
+    recording_started_at TIMESTAMPTZ,
+    lobby_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    pending_knock_user_ids JSONB DEFAULT '[]'::jsonb,
+    admitted_user_ids JSONB DEFAULT '[]'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     started_at TIMESTAMPTZ,
@@ -151,6 +161,9 @@ CREATE INDEX IF NOT EXISTS idx_meetings_status ON meetings(status);
 CREATE INDEX IF NOT EXISTS idx_meetings_scheduled_start ON meetings(scheduled_start_time);
 CREATE INDEX IF NOT EXISTS idx_meetings_started_at ON meetings(started_at DESC);
 CREATE INDEX IF NOT EXISTS idx_meetings_ended_at ON meetings(ended_at DESC);
+CREATE INDEX IF NOT EXISTS idx_meetings_project ON meetings(project);
+CREATE INDEX IF NOT EXISTS idx_meetings_is_recording ON meetings(is_recording);
+CREATE INDEX IF NOT EXISTS idx_meetings_lobby_enabled ON meetings(lobby_enabled);
 
 CREATE INDEX IF NOT EXISTS idx_participants_meeting_id ON meeting_participants(meeting_id);
 CREATE INDEX IF NOT EXISTS idx_participants_user_id ON meeting_participants(user_id);

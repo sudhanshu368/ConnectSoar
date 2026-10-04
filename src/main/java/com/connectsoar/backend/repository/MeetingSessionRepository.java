@@ -58,6 +58,13 @@ public class MeetingSessionRepository {
                 .collect(Collectors.toList());
     }
 
+    public List<MeetingSession> findAllByUserId(String userId) {
+        if (userId == null) return List.of();
+        return sessionStorage.values().stream()
+                .filter(s -> userId.equals(s.getUserId()))
+                .collect(Collectors.toList());
+    }
+
     public List<MeetingSession> findAll() {
         return new ArrayList<>(sessionStorage.values());
     }
