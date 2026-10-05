@@ -14,12 +14,27 @@ public class SupabaseConfig {
     @Value("${supabase.anon-key}")
     private String supabaseAnonKey;
 
+    @Value("${supabase.service-role-key:}")
+    private String supabaseServiceRoleKey;
+
     @Bean
     public RestClient supabaseRestClient(RestClient.Builder builder) {
         return builder
                 .baseUrl(supabaseUrl + "/auth/v1")
                 .defaultHeader("apikey", supabaseAnonKey)
                 .defaultHeader("Authorization", "Bearer " + supabaseAnonKey)
+                .defaultHeader("Content-Type", "application/json")
+                .build();
+    }
+
+    @Bean
+    public RestClient supabasePostgrestRestClient(RestClient.Builder builder) {
+        String authHeader = (supabaseServiceRoleKey != null && !supabaseServiceRoleKey.isBlank())
+                ? supabaseServiceRoleKey : supabaseAnonKey;
+        return builder
+                .baseUrl(supabaseUrl + "/rest/v1")
+                .defaultHeader("apikey", supabaseAnonKey)
+                .defaultHeader("Authorization", "Bearer " + authHeader)
                 .defaultHeader("Content-Type", "application/json")
                 .build();
     }

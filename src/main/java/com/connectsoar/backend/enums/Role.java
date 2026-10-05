@@ -2,6 +2,7 @@ package com.connectsoar.backend.enums;
 
 public enum Role {
     admin,
+    manager,
     employee;
 
     public static Role fromString(String val) {

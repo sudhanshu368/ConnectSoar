@@ -424,8 +424,14 @@ public class SupabaseAuthService {
             Map<String, Object> metadata = new HashMap<>();
             metadata.put("name", request.getName());
             metadata.put("role", assignedRole.name());
+            if (request.getDepartment() != null) metadata.put("department", request.getDepartment());
+            if (request.getDesignation() != null) metadata.put("designation", request.getDesignation());
+            if (request.getPhone() != null) metadata.put("phone", request.getPhone());
+            if (request.getAddress() != null) metadata.put("address", request.getAddress());
+            if (request.getAdharNumber() != null) metadata.put("adhar_number", request.getAdharNumber());
             if (request.getImageUrl() != null && !request.getImageUrl().isBlank()) {
                 metadata.put("avatar_url", request.getImageUrl());
+                metadata.put("image_url", request.getImageUrl());
             }
 
             Map<String, Object> body = new HashMap<>();

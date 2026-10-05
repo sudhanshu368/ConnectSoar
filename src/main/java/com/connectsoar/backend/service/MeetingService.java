@@ -25,6 +25,7 @@ import com.connectsoar.backend.exception.ApiException;
 import com.connectsoar.backend.model.Meeting;
 import com.connectsoar.backend.model.MeetingInvitation;
 import com.connectsoar.backend.model.MeetingParticipant;
+import com.connectsoar.backend.model.MeetingSession;
 import com.connectsoar.backend.model.Profile;
 import com.connectsoar.backend.repository.MeetingInvitationRepository;
 import com.connectsoar.backend.repository.MeetingParticipantRepository;
